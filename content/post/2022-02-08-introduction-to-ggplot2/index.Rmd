@@ -1,0 +1,8 @@
+---
+title: Introduction to GGPLOT2
+author: ''
+date: '2022-02-08'
+slug: introduction-to-ggplot2
+categories: []
+tags: []
+---
