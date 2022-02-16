@@ -1,0 +1,273 @@
+---
+title: Working with your multiple data frames
+author: ''
+date: '2022-02-16'
+slug: working-with-your-multiple-data-frames
+categories: []
+tags: []
+---
+
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
+
+
+<div id="call-libraries" class="section level2">
+<h2>Call Libraries</h2>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## -- Attaching packages --------------------------------------- tidyverse 1.3.1 --</code></pre>
+<pre><code>## v ggplot2 3.3.5     v purrr   0.3.4
+## v tibble  3.1.6     v dplyr   1.0.7
+## v tidyr   1.2.0     v stringr 1.4.0
+## v readr   2.1.2     v forcats 0.5.1</code></pre>
+<pre><code>## -- Conflicts ------------------------------------------ tidyverse_conflicts() --
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+</div>
+<div id="import-files-from-github-for-top-10-women-scientists" class="section level2">
+<h2>Import files from Github for top 10 women scientists</h2>
+<pre class="r"><code>url1 &lt;- &#39;https://raw.githubusercontent.com/vsomesula/tidyverse/main/professions.csv&#39;
+url2 &lt;- &#39;https://raw.githubusercontent.com/vsomesula/tidyverse/main/dates.csv&#39;
+url3 &lt;- &#39;https://raw.githubusercontent.com/vsomesula/tidyverse/main/works.csv&#39;
+professions &lt;- read_csv(url1)</code></pre>
+<pre><code>## Rows: 10 Columns: 2
+## -- Column specification --------------------------------------------------------
+## Delimiter: &quot;,&quot;
+## chr (2): name, profession
+## 
+## i Use `spec()` to retrieve the full column specification for this data.
+## i Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<pre class="r"><code>dates &lt;- read_csv(url2)</code></pre>
+<pre><code>## Rows: 8 Columns: 3
+## -- Column specification --------------------------------------------------------
+## Delimiter: &quot;,&quot;
+## chr (1): name
+## dbl (2): birth_year, death_year
+## 
+## i Use `spec()` to retrieve the full column specification for this data.
+## i Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<pre class="r"><code>works &lt;- read_csv(url3)</code></pre>
+<pre><code>## Rows: 9 Columns: 2
+## -- Column specification --------------------------------------------------------
+## Delimiter: &quot;,&quot;
+## chr (2): name, known_for
+## 
+## i Use `spec()` to retrieve the full column specification for this data.
+## i Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+<div id="left-join-dates-and-professions-data-frames" class="section level2">
+<h2>Left join dates and professions data frames</h2>
+<pre class="r"><code>professions %&gt;%
+  left_join(dates)</code></pre>
+<pre><code>## Joining, by = &quot;name&quot;</code></pre>
+<pre><code>## # A tibble: 10 x 4
+##    name               profession                         birth_year death_year
+##    &lt;chr&gt;              &lt;chr&gt;                                   &lt;dbl&gt;      &lt;dbl&gt;
+##  1 Ada Lovelace       Mathematician                              NA         NA
+##  2 Marie Curie        Physicist and Chemist                      NA         NA
+##  3 Janaki Ammal       Botanist                                 1897       1984
+##  4 Chien-Shiung Wu    Physicist                                1912       1997
+##  5 Katherine Johnson  Mathematician                            1918       2020
+##  6 Rosalind Franklin  Chemist                                  1920       1958
+##  7 Vera Rubin         Astronomer                               1928       2016
+##  8 Gladys West        Mathematician                            1930         NA
+##  9 Flossie Wong-Staal Virologist and Molecular Biologist       1947         NA
+## 10 Jennifer Doudna    Biochemist                               1964         NA</code></pre>
+</div>
+<div id="right-join-dates-and-professions-data-frames" class="section level2">
+<h2>Right join dates and professions data frames</h2>
+<pre class="r"><code>professions %&gt;% 
+  right_join(dates)</code></pre>
+<pre><code>## Joining, by = &quot;name&quot;</code></pre>
+<pre><code>## # A tibble: 8 x 4
+##   name               profession                         birth_year death_year
+##   &lt;chr&gt;              &lt;chr&gt;                                   &lt;dbl&gt;      &lt;dbl&gt;
+## 1 Janaki Ammal       Botanist                                 1897       1984
+## 2 Chien-Shiung Wu    Physicist                                1912       1997
+## 3 Katherine Johnson  Mathematician                            1918       2020
+## 4 Rosalind Franklin  Chemist                                  1920       1958
+## 5 Vera Rubin         Astronomer                               1928       2016
+## 6 Gladys West        Mathematician                            1930         NA
+## 7 Flossie Wong-Staal Virologist and Molecular Biologist       1947         NA
+## 8 Jennifer Doudna    Biochemist                               1964         NA</code></pre>
+</div>
+<div id="full-joining-the-first-works-and-dates-dataframes" class="section level2">
+<h2>Full joining the first works and dates dataframes</h2>
+<pre class="r"><code>dates %&gt;% 
+  full_join(works)</code></pre>
+<pre><code>## Joining, by = &quot;name&quot;</code></pre>
+<pre><code>## # A tibble: 10 x 4
+##    name               birth_year death_year known_for                           
+##    &lt;chr&gt;                   &lt;dbl&gt;      &lt;dbl&gt; &lt;chr&gt;                               
+##  1 Janaki Ammal             1897       1984 hybrid species, biodiversity protec~
+##  2 Chien-Shiung Wu          1912       1997 confim and refine theory of radioac~
+##  3 Katherine Johnson        1918       2020 calculations of orbital mechanics c~
+##  4 Rosalind Franklin        1920       1958 &lt;NA&gt;                                
+##  5 Vera Rubin               1928       2016 existence of dark matter            
+##  6 Gladys West              1930         NA mathematical modeling of the shape ~
+##  7 Flossie Wong-Staal       1947         NA first scientist to clone HIV and cr~
+##  8 Jennifer Doudna          1964         NA one of the primary developers of CR~
+##  9 Ada Lovelace               NA         NA first computer algorithm            
+## 10 Marie Curie                NA         NA theory of radioactivity,  discovery~</code></pre>
+</div>
+<div id="inner-join-works-and-dates-dataframes" class="section level2">
+<h2>Inner join works and dates dataframes</h2>
+<pre class="r"><code>dates %&gt;%
+    inner_join(works)</code></pre>
+<pre><code>## Joining, by = &quot;name&quot;</code></pre>
+<pre><code>## # A tibble: 7 x 4
+##   name               birth_year death_year known_for                            
+##   &lt;chr&gt;                   &lt;dbl&gt;      &lt;dbl&gt; &lt;chr&gt;                                
+## 1 Janaki Ammal             1897       1984 hybrid species, biodiversity protect~
+## 2 Chien-Shiung Wu          1912       1997 confim and refine theory of radioact~
+## 3 Katherine Johnson        1918       2020 calculations of orbital mechanics cr~
+## 4 Vera Rubin               1928       2016 existence of dark matter             
+## 5 Gladys West              1930         NA mathematical modeling of the shape o~
+## 6 Flossie Wong-Staal       1947         NA first scientist to clone HIV and cre~
+## 7 Jennifer Doudna          1964         NA one of the primary developers of CRI~</code></pre>
+</div>
+<div id="semi-join-works-and-dates-dataframes" class="section level2">
+<h2>Semi join works and dates dataframes</h2>
+<pre class="r"><code>dates %&gt;%
+  semi_join(works)</code></pre>
+<pre><code>## Joining, by = &quot;name&quot;</code></pre>
+<pre><code>## # A tibble: 7 x 3
+##   name               birth_year death_year
+##   &lt;chr&gt;                   &lt;dbl&gt;      &lt;dbl&gt;
+## 1 Janaki Ammal             1897       1984
+## 2 Chien-Shiung Wu          1912       1997
+## 3 Katherine Johnson        1918       2020
+## 4 Vera Rubin               1928       2016
+## 5 Gladys West              1930         NA
+## 6 Flossie Wong-Staal       1947         NA
+## 7 Jennifer Doudna          1964         NA</code></pre>
+</div>
+<div id="anti-join-works-and-dateframes" class="section level2">
+<h2>Anti join works and dateframes</h2>
+<pre class="r"><code>dates %&gt;%
+  anti_join(works)</code></pre>
+<pre><code>## Joining, by = &quot;name&quot;</code></pre>
+<pre><code>## # A tibble: 1 x 3
+##   name              birth_year death_year
+##   &lt;chr&gt;                  &lt;dbl&gt;      &lt;dbl&gt;
+## 1 Rosalind Franklin       1920       1958</code></pre>
+</div>
+<div id="combining-professions-dates-and-works-dataframes" class="section level2">
+<h2>Combining professions, dates, and works dataframes</h2>
+<pre class="r"><code>professions %&gt;%
+  left_join(dates) %&gt;%
+  left_join(works)</code></pre>
+<pre><code>## Joining, by = &quot;name&quot;
+## Joining, by = &quot;name&quot;</code></pre>
+<pre><code>## # A tibble: 10 x 5
+##    name               profession                 birth_year death_year known_for
+##    &lt;chr&gt;              &lt;chr&gt;                           &lt;dbl&gt;      &lt;dbl&gt; &lt;chr&gt;    
+##  1 Ada Lovelace       Mathematician                      NA         NA first co~
+##  2 Marie Curie        Physicist and Chemist              NA         NA theory o~
+##  3 Janaki Ammal       Botanist                         1897       1984 hybrid s~
+##  4 Chien-Shiung Wu    Physicist                        1912       1997 confim a~
+##  5 Katherine Johnson  Mathematician                    1918       2020 calculat~
+##  6 Rosalind Franklin  Chemist                          1920       1958 &lt;NA&gt;     
+##  7 Vera Rubin         Astronomer                       1928       2016 existenc~
+##  8 Gladys West        Mathematician                    1930         NA mathemat~
+##  9 Flossie Wong-Staal Virologist and Molecular ~       1947         NA first sc~
+## 10 Jennifer Doudna    Biochemist                       1964         NA one of t~</code></pre>
+</div>
+<div id="import-dataframes-for-student-records" class="section level2">
+<h2>Import dataframes for student records</h2>
+<pre class="r"><code>url4 &lt;- &#39;https://raw.githubusercontent.com/vsomesula/tidyverse/main/enrolment.csv&#39;
+url5 &lt;- &#39;https://raw.githubusercontent.com/vsomesula/tidyverse/main/survey.csv&#39;
+enrolment &lt;- read_csv(url4)</code></pre>
+<pre><code>## Rows: 3 Columns: 2
+## -- Column specification --------------------------------------------------------
+## Delimiter: &quot;,&quot;
+## chr (1): name
+## dbl (1): id
+## 
+## i Use `spec()` to retrieve the full column specification for this data.
+## i Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<pre class="r"><code>survey &lt;- read_csv(url5)</code></pre>
+<pre><code>## Rows: 4 Columns: 3
+## -- Column specification --------------------------------------------------------
+## Delimiter: &quot;,&quot;
+## chr (2): name, username
+## dbl (1): id
+## 
+## i Use `spec()` to retrieve the full column specification for this data.
+## i Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+<div id="student-records-for-students-in-class" class="section level2">
+<h2>Student records for students in class</h2>
+<pre class="r"><code>enrolment %&gt;%
+  left_join(survey, by = &quot;id&quot;)</code></pre>
+<pre><code>## # A tibble: 3 x 4
+##      id name.x          name.y  username            
+##   &lt;dbl&gt; &lt;chr&gt;           &lt;chr&gt;   &lt;chr&gt;               
+## 1     1 Dave Friday     &lt;NA&gt;    &lt;NA&gt;                
+## 2     2 Hermine         Hermine bakealongwithhermine
+## 3     3 Sura Selvarajah Sura    surasbakes</code></pre>
+</div>
+<div id="student-records-for-students-surveyed-missing" class="section level2">
+<h2>Student records for students surveyed missing</h2>
+<pre class="r"><code>enrolment %&gt;%
+  anti_join(survey, by = &quot;id&quot;)</code></pre>
+<pre><code>## # A tibble: 1 x 2
+##      id name       
+##   &lt;dbl&gt; &lt;chr&gt;      
+## 1     1 Dave Friday</code></pre>
+</div>
+<div id="student-records-for-students-dropped" class="section level2">
+<h2>Student records for students dropped</h2>
+<pre class="r"><code>survey %&gt;%
+  anti_join(enrolment, by = &quot;id&quot;)</code></pre>
+<pre><code>## # A tibble: 2 x 3
+##      id name  username       
+##   &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;          
+## 1     4 Peter peter_bakes    
+## 2     5 Mark  thebakingbuddha</code></pre>
+</div>
+<div id="import-dataframes-for-grocery-sales" class="section level2">
+<h2>Import dataframes for grocery sales</h2>
+<pre class="r"><code>url6 &lt;- &#39;https://raw.githubusercontent.com/vsomesula/tidyverse/main/purchases.csv&#39;
+url7 &lt;- &#39;https://raw.githubusercontent.com/vsomesula/tidyverse/main/prices.csv&#39;
+purchases &lt;- read_csv(url6)</code></pre>
+<pre><code>## Rows: 5 Columns: 2
+## -- Column specification --------------------------------------------------------
+## Delimiter: &quot;,&quot;
+## chr (1): item
+## dbl (1): customer_id
+## 
+## i Use `spec()` to retrieve the full column specification for this data.
+## i Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<pre class="r"><code>prices &lt;- read_csv(url7)</code></pre>
+<pre><code>## Rows: 5 Columns: 2
+## -- Column specification --------------------------------------------------------
+## Delimiter: &quot;,&quot;
+## chr (1): item
+## dbl (1): price
+## 
+## i Use `spec()` to retrieve the full column specification for this data.
+## i Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+<div id="find-grocery-sales-total-revenue" class="section level2">
+<h2>Find grocery sales total revenue</h2>
+<pre class="r"><code>purchases %&gt;%
+    left_join(prices) %&gt;%
+    summarise(total_revenue = sum(price))</code></pre>
+<pre><code>## Joining, by = &quot;item&quot;</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##   total_revenue
+##           &lt;dbl&gt;
+## 1          5.75</code></pre>
+</div>
+<div id="find-grocery-sales-revenue-per-customer" class="section level2">
+<h2>Find grocery sales revenue per customer</h2>
+<pre class="r"><code>purchases %&gt;%
+  left_join(prices) %&gt;%
+  group_by(customer_id) %&gt;%
+  summarise(total_revenue = sum(price))</code></pre>
+<pre><code>## Joining, by = &quot;item&quot;</code></pre>
+<pre><code>## # A tibble: 2 x 2
+##   customer_id total_revenue
+##         &lt;dbl&gt;         &lt;dbl&gt;
+## 1           1          1.95
+## 2           2          3.8</code></pre>
+</div>
