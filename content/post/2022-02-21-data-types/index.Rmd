@@ -1,0 +1,72 @@
+---
+title: Data  types
+author: ''
+date: '2022-02-21'
+slug: data-types
+categories: []
+tags: []
+---
+## Call Libraries 
+```{r}
+library(tidyverse)
+library(rmarkdown)
+```
+
+## Import files from Github for cat lover data
+
+```{r}
+url1 <- 'https://raw.githubusercontent.com/vsomesula/tidyverse/main/cat-lovers.csv'
+cat_lovers <- read_csv(url1)
+
+```
+
+## Running summarise fails due to non-numeric arguments
+```{r}
+cat_lovers %>%
+ summarise(mean_cats = mean(number_of_cats))
+```
+### Using the help command on mean shows that there is an argument that takes out NA values however including this argument does not fix the error
+
+```{r}
+?mean
+cat_lovers %>%
+  summarise(mean_cats = mean(number_of_cats, na.rm = TRUE))
+```
+## Running the type command shows us we have data type mismatch
+```{r}
+glimpse(cat_lovers)
+```
+### We were expecting a numeric data type but we recieved chr instead so we must explicitly convert the data type
+```{r}
+cat_lovers %>%
+ mutate(number_of_cats = case_when(
+     name == "Ginger Clark"  ~ 2,
+     name == "Doug Bass"     ~ 3,
+     TRUE                    ~as.numeric (number_of_cats)
+    )) %>%
+  summarise(mean_cats = mean(number_of_cats))
+```
+### Convert data types after manipulating data to the same type to ensure all points are numeric type and data is all one type
+```{r}
+cat_lovers %>%
+ mutate(number_of_cats = case_when(
+     name == "Ginger Clark"  ~ "2",
+     name == "Doug Bass"     ~ "3",
+     TRUE                    ~ number_of_cats
+    ),
+number_of_cats =  as.numeric(number_of_cats)
+) %>%
+  summarise(mean_cats = mean(number_of_cats))
+```
+## Save value as a variable
+```{r}
+cat_lovers <- cat_lovers %>%
+ mutate(number_of_cats = case_when(
+     name == "Ginger Clark"  ~ "2",
+     name == "Doug Bass"     ~ "3",
+     TRUE                    ~ number_of_cats
+    ),
+number_of_cats =  as.numeric(number_of_cats)
+) %>%
+  summarise(mean_cats = mean(number_of_cats))
+```
