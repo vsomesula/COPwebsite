@@ -1,0 +1,172 @@
+---
+title: Data IO
+author: ''
+date: '2022-02-23'
+slug: data-io
+categories: []
+tags: []
+---
+## Call Libraries 
+```{r}
+library(tidyverse)
+library(rmarkdown)
+library(readr)
+library(ggplot2)
+library(readxl)
+```
+## Read the data from the CSV file
+```{r}
+  nobel <- read_csv('https://raw.githubusercontent.com/vsomesula/tidyverse/main/nobel.csv')
+nobel
+```
+### Split data into two data frames one for STEM and one for non-STEM
+
+```{r}
+nobel_stem <- nobel %>%
+  filter(category %in% c("Physics", "Medicine", "Chemistry", "Economics"))
+                         
+nobel_nonstem <- nobel %>%
+  filter(category != "Physics" & category != "Medicine" & category != "Chemistry" & category != "Economics")
+
+```
+
+## Write CSV files to the folder containing this post
+```{r}
+write_csv(nobel_stem, file = "C:/Users/prana/Documents/COPwebsite/content/post/2022-02-23-data-io/nobel_stem.csv")
+
+write_csv(nobel_nonstem, file = "C:/Users/prana/Documents/COPwebsite/content/post/2022-02-23-data-io/nobel_nonstem.csv")
+```
+
+### Readback CSV files to inspect
+
+```{r}
+read_csv("C:/Users/prana/Documents/COPwebsite/content/post/2022-02-23-data-io/nobel_stem.csv")
+read_csv("C:/Users/prana/Documents/COPwebsite/content/post/2022-02-23-data-io/nobel_nonstem.csv")
+```
+# Naming Data
+
+```{r}
+edibnb_badnames <- read_csv('https://raw.githubusercontent.com/vsomesula/tidyverse/main/edibnb-badnames.csv')
+names(edibnb_badnames)
+```
+## R does not allow spaces in variable names so we have some optionns
+#### Option 1: Define coloumn names
+
+```{r}
+edibnb_col_names <- read_csv('https://raw.githubusercontent.com/vsomesula/tidyverse/main/edibnb-badnames.csv',
+        col_names = c("id", "price","neighbourhood","accommodates", "bathroom", "bedroom","bed", "review_scores_rating",                   "n_reviews", "url"))
+names(edibnb_col_names)
+```
+#### Option 2: Format text to snake_case
+```{r}
+edibnb_clean_names <- read_csv('https://raw.githubusercontent.com/vsomesula/tidyverse/main/edibnb-badnames.csv') %>%
+  janitor::clean_names()
+names(edibnb_clean_names)
+```
+# Variable types
+### Types shown in output
+
+```{r}
+read_csv('https://raw.githubusercontent.com/vsomesula/tidyverse/main/df-na.csv')
+```
+## Although it is chr we want x to be double so we assign explicit NA
+```{r}
+read_csv('https://raw.githubusercontent.com/vsomesula/tidyverse/main/df-na.csv',
+         na = c("", "NA", "9999", "Not applicable")) 
+```
+## Otherwise, we can specifcy coloumn types
+```{r}
+read_csv('https://raw.githubusercontent.com/vsomesula/tidyverse/main/df-na.csv', col_types = list(col_double(),
+                                             col_character(),
+                                             col_character()))
+
+```
+## Case study: Favorite Foods
+```{r}
+fav_food <- read_csv('https://raw.githubusercontent.com/vsomesula/tidyverse/main/favourite-food.csv')
+fav_food
+```
+## Clean variable names
+
+```{r}
+fav_food <- read_csv("https://raw.githubusercontent.com/vsomesula/tidyverse/main/favourite-food.csv") %>%
+  janitor::clean_names()
+fav_food
+```
+## Handle the NA's
+
+```{r}
+fav_food <- read_csv("https://raw.githubusercontent.com/vsomesula/tidyverse/main/favourite-food.csv", na = c("N/A", "99999")) %>%
+  janitor::clean_names()
+fav_food
+```
+## Make age numeric
+
+```{r}
+fav_food <- fav_food %>%
+  mutate(
+    age = if_else(age == "five", "5", age),
+    age = as.numeric(age)
+    )
+glimpse(fav_food)
+```
+
+## Check socio-economic status
+```{r}
+fav_food %>%
+  count(ses)
+```
+### Make ses a factor
+```{r}
+fav_food <- fav_food %>%
+  mutate(ses = fct_relevel(ses, "Low", "Middle", "High"))
+fav_food %>%
+  count(ses)
+```
+
+## Put all the code together for a cleaned up version of your code
+
+```{r}
+fav_food <- read_csv("https://raw.githubusercontent.com/vsomesula/tidyverse/main/favourite-food.csv", na = c("N/A", "99999")) %>%
+  janitor::clean_names() %>%
+  mutate(
+    age = if_else(age == "five", "5", age), 
+    age = as.numeric(age),
+    ses = fct_relevel(ses, "Low", "Middle", "High")
+  )
+fav_food
+```
+
+## Write the CSV file and read it back in to check 
+
+```{r}
+write_csv(fav_food, file = "C:/Users/prana/Documents/COPwebsite/content/post/2022-02-23-data-io/fav-food-clean.csv")
+fav_food_clean <- read_csv("C:/Users/prana/Documents/COPwebsite/content/post/2022-02-23-data-io/fav-food-clean.csv")
+
+```
+## Check what happens to ses
+
+```{r}
+fav_food_clean %>%
+  count(ses)
+```
+# Sometimes an rds file type is more convinient
+```{r}
+write_rds(fav_food, file = "C:/Users/prana/Documents/COPwebsite/content/post/2022-02-23-data-io/fav-food-clean.rds")
+fav_food_clean <- read_rds("C:/Users/prana/Documents/COPwebsite/content/post/2022-02-23-data-io/fav-food-clean.rds")
+fav_food_clean %>%
+  count(ses)
+```
+## Your turn
+```{r}
+sales <- read_csv('https://raw.githubusercontent.com/vsomesula/tidyverse/main/sales.csv', col_names = c("Brand", "ID", "N")) %>%
+  janitor :: clean_names() %>% 
+  mutate(
+    brand = if_else(brand == "B1", "Brand 1", "Brand 2")
+      )
+sales <- sales[-1,]
+sales
+```
+
+
+
