@@ -32,7 +32,7 @@ nobel_nonstem <- nobel %>%
 
 ## Write CSV files to the folder containing this post
 ```{r}
-write_csv(nobel_stem, file = "C:/Users/prana/Documents/COPwebsite/content/post/2022-02-23-data-io/nobel_stem.csv")
+write_csv(nobel_stem, file = "C:/Users/prana/Documents/COPwebsite/content/post/2022-02-23-data-io/nobel_stem.csv") 
 
 write_csv(nobel_nonstem, file = "C:/Users/prana/Documents/COPwebsite/content/post/2022-02-23-data-io/nobel_nonstem.csv")
 ```

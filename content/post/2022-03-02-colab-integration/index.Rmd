@@ -1,0 +1,11 @@
+---
+title: Colab Integration
+author: ''
+date: '2022-03-02'
+slug: colab-integration
+categories: []
+tags: []
+---
+## Using R in Google Colab For Statistics 
+
+<script src="https://gist.github.com/vsomesula/4c5a03e9c53ecf7812073121a07d3ce6.js"></script>
