@@ -1,0 +1,127 @@
+---
+title: 'A01: Modeling for Prediction'
+author: ''
+date: '2022-03-18'
+slug: a01-modeling-for-prediction
+categories: []
+tags: []
+---
+# Setup
+```{r}
+library(ISLR)
+library(boot)
+```
+# Cross Validation
+## Set Seed: To reproduce the sampling for train - test split
+```{r}
+set.seed(1)
+head(Auto)
+dim(Auto)
+```
+## Create an index to randomly sample 50% records from Auto
+```{r}
+train <- sample(392, 196)
+head(train)
+```
+## Make the variables in Auto dataset as locally accessible objects and linear fit
+```{r}
+attach(Auto)
+lm.fit <- lm(mpg~horsepower, data = Auto, subset = train)
+lm.fit
+```
+## Calculate the error of the residual 
+```{r}
+mean((mpg - predict(lm.fit, Auto))[-train]^2)
+```
+## Examine relationship between horsepower and mpg
+```{r}
+plot(mpg, horsepower)
+```
+## Fit a quadratic function
+```{r}
+lm.fit.poly <- lm(mpg~poly(horsepower, 2), data =  Auto, subset = train)
+lm.fit.poly
+```
+## Find the error of the quadratic function(the error decreases)
+```{r}
+mean((mpg - predict(lm.fit.poly, Auto))[-train]^2)
+```
+# Condesned code with n extracted out
+```{r}
+n=10
+set.seed(n)
+train <- sample(392, 196)
+attach(Auto)
+lm.fit <- lm(mpg~horsepower, data = Auto, subset = train)
+lm.fit.poly <- lm(mpg~poly(horsepower, 2), data = Auto, subset = train)
+mean((mpg - predict(lm.fit, Auto))[-train]^2)
+mean((mpg - predict(lm.fit.poly, Auto))[-train]^2)
+```
+# LOO CV: Leave One Out Cross Validation
+## GLM defaults to lm when passed without any arguments
+```{r}
+glm.fit <- glm(mpg~horsepower, data =  Auto)
+coef(glm.fit)
+lm.fit <- lm(mpg~horsepower, data =  Auto)
+coef(lm.fit)
+```
+## Cross validiation error
+```{r}
+cv.err <- cv.glm(Auto, glm.fit)
+cv.err$delta
+```
+## Cross validation error with different degrees of freedom
+```{r}
+cv.error <- rep(0, 5)
+degree <- 1:5
+for(d in degree){
+  glm.fit <- glm(mpg~poly(horsepower, d), data =  Auto)
+  cv.error[d] <- cv.glm(Auto, glm.fit)$delta[1]
+}
+cv.error
+plot(degree, cv.error, type = "b")
+```
+## K fold Cross Validation
+```{r}
+K = 10
+cv.error.10 <- rep(0, 5)
+degree <- 1:5
+for(d in degree){
+  glm.fit <- glm(mpg~poly(horsepower, d), data =  Auto)
+  cv.error.10[d] <- cv.glm(Auto, glm.fit, K = K)$delta[1]
+}
+cv.error.10
+plot(degree, cv.error, type = "b")
+lines(degree, cv.error.10, type = "b", col = "red")
+```
+# BootStrap Validation
+## Estimation of accuracy of a linear model
+```{r}
+boot.fn <- function(data, index){
+  return(coef(lm(mpg~horsepower, data = data, subset = index)))
+}
+boot.fn(Auto, 1:392)
+```
+### Test
+```{r}
+set.seed(1)
+boot.fn(Auto, sample(392, 392, replace = T))
+```
+## Run the boot function a couple times
+### 1000 is the number of samples
+```{r}
+boot.out <- boot(Auto, boot.fn, 1000)
+```
+## Plot to see the relationship
+```{r}
+plot(boot.out)
+```
+
+
+
+
+
+
+
+
+
