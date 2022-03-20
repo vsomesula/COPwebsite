@@ -1,0 +1,177 @@
+---
+title: 'A01: Modeling for Prediction'
+author: ''
+date: '2022-03-18'
+slug: a01-modeling-for-prediction
+categories: []
+tags: []
+---
+
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
+
+
+<div id="setup" class="section level1">
+<h1>Setup</h1>
+<pre class="r"><code>library(ISLR)</code></pre>
+<pre><code>## Warning: package &#39;ISLR&#39; was built under R version 4.1.3</code></pre>
+<pre class="r"><code>library(boot)</code></pre>
+<pre><code>## Warning: package &#39;boot&#39; was built under R version 4.1.3</code></pre>
+</div>
+<div id="cross-validation" class="section level1">
+<h1>Cross Validation</h1>
+<div id="set-seed-to-reproduce-the-sampling-for-train---test-split" class="section level2">
+<h2>Set Seed: To reproduce the sampling for train - test split</h2>
+<pre class="r"><code>set.seed(1)
+head(Auto)</code></pre>
+<pre><code>##   mpg cylinders displacement horsepower weight acceleration year origin
+## 1  18         8          307        130   3504         12.0   70      1
+## 2  15         8          350        165   3693         11.5   70      1
+## 3  18         8          318        150   3436         11.0   70      1
+## 4  16         8          304        150   3433         12.0   70      1
+## 5  17         8          302        140   3449         10.5   70      1
+## 6  15         8          429        198   4341         10.0   70      1
+##                        name
+## 1 chevrolet chevelle malibu
+## 2         buick skylark 320
+## 3        plymouth satellite
+## 4             amc rebel sst
+## 5               ford torino
+## 6          ford galaxie 500</code></pre>
+<pre class="r"><code>dim(Auto)</code></pre>
+<pre><code>## [1] 392   9</code></pre>
+</div>
+<div id="create-an-index-to-randomly-sample-50-records-from-auto" class="section level2">
+<h2>Create an index to randomly sample 50% records from Auto</h2>
+<pre class="r"><code>train &lt;- sample(392, 196)
+head(train)</code></pre>
+<pre><code>## [1] 324 167 129 299 270 187</code></pre>
+</div>
+<div id="make-the-variables-in-auto-dataset-as-locally-accessible-objects-and-linear-fit" class="section level2">
+<h2>Make the variables in Auto dataset as locally accessible objects and linear fit</h2>
+<pre class="r"><code>attach(Auto)
+lm.fit &lt;- lm(mpg~horsepower, data = Auto, subset = train)
+lm.fit</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = mpg ~ horsepower, data = Auto, subset = train)
+## 
+## Coefficients:
+## (Intercept)   horsepower  
+##     41.2835      -0.1697</code></pre>
+</div>
+<div id="calculate-the-error-of-the-residual" class="section level2">
+<h2>Calculate the error of the residual</h2>
+<pre class="r"><code>mean((mpg - predict(lm.fit, Auto))[-train]^2)</code></pre>
+<pre><code>## [1] 23.26601</code></pre>
+</div>
+<div id="examine-relationship-between-horsepower-and-mpg" class="section level2">
+<h2>Examine relationship between horsepower and mpg</h2>
+<pre class="r"><code>plot(mpg, horsepower)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-6-1.png" width="672" />
+## Fit a quadratic function</p>
+<pre class="r"><code>lm.fit.poly &lt;- lm(mpg~poly(horsepower, 2), data =  Auto, subset = train)
+lm.fit.poly</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = mpg ~ poly(horsepower, 2), data = Auto, subset = train)
+## 
+## Coefficients:
+##          (Intercept)  poly(horsepower, 2)1  poly(horsepower, 2)2  
+##                23.55               -123.59                 47.72</code></pre>
+</div>
+<div id="find-the-error-of-the-quadratic-functionthe-error-decreases" class="section level2">
+<h2>Find the error of the quadratic function(the error decreases)</h2>
+<pre class="r"><code>mean((mpg - predict(lm.fit.poly, Auto))[-train]^2)</code></pre>
+<pre><code>## [1] 18.71646</code></pre>
+</div>
+</div>
+<div id="condesned-code-with-n-extracted-out" class="section level1">
+<h1>Condesned code with n extracted out</h1>
+<pre class="r"><code>n=10
+set.seed(n)
+train &lt;- sample(392, 196)
+attach(Auto)</code></pre>
+<pre><code>## The following objects are masked from Auto (pos = 3):
+## 
+##     acceleration, cylinders, displacement, horsepower, mpg, name,
+##     origin, weight, year</code></pre>
+<pre class="r"><code>lm.fit &lt;- lm(mpg~horsepower, data = Auto, subset = train)
+lm.fit.poly &lt;- lm(mpg~poly(horsepower, 2), data = Auto, subset = train)
+mean((mpg - predict(lm.fit, Auto))[-train]^2)</code></pre>
+<pre><code>## [1] 26.43531</code></pre>
+<pre class="r"><code>mean((mpg - predict(lm.fit.poly, Auto))[-train]^2)</code></pre>
+<pre><code>## [1] 19.87043</code></pre>
+</div>
+<div id="loo-cv-leave-one-out-cross-validation" class="section level1">
+<h1>LOO CV: Leave One Out Cross Validation</h1>
+<div id="glm-defaults-to-lm-when-passed-without-any-arguments" class="section level2">
+<h2>GLM defaults to lm when passed without any arguments</h2>
+<pre class="r"><code>glm.fit &lt;- glm(mpg~horsepower, data =  Auto)
+coef(glm.fit)</code></pre>
+<pre><code>## (Intercept)  horsepower 
+##  39.9358610  -0.1578447</code></pre>
+<pre class="r"><code>lm.fit &lt;- lm(mpg~horsepower, data =  Auto)
+coef(lm.fit)</code></pre>
+<pre><code>## (Intercept)  horsepower 
+##  39.9358610  -0.1578447</code></pre>
+</div>
+<div id="cross-validiation-error" class="section level2">
+<h2>Cross validiation error</h2>
+<pre class="r"><code>cv.err &lt;- cv.glm(Auto, glm.fit)
+cv.err$delta</code></pre>
+<pre><code>## [1] 24.23151 24.23114</code></pre>
+</div>
+<div id="cross-validation-error-with-different-degrees-of-freedom" class="section level2">
+<h2>Cross validation error with different degrees of freedom</h2>
+<pre class="r"><code>cv.error &lt;- rep(0, 5)
+degree &lt;- 1:5
+for(d in degree){
+  glm.fit &lt;- glm(mpg~poly(horsepower, d), data =  Auto)
+  cv.error[d] &lt;- cv.glm(Auto, glm.fit)$delta[1]
+}
+cv.error</code></pre>
+<pre><code>## [1] 24.23151 19.24821 19.33498 19.42443 19.03321</code></pre>
+<pre class="r"><code>plot(degree, cv.error, type = &quot;b&quot;)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-12-1.png" width="672" />
+## K fold Cross Validation</p>
+<pre class="r"><code>K = 10
+cv.error.10 &lt;- rep(0, 5)
+degree &lt;- 1:5
+for(d in degree){
+  glm.fit &lt;- glm(mpg~poly(horsepower, d), data =  Auto)
+  cv.error.10[d] &lt;- cv.glm(Auto, glm.fit, K = K)$delta[1]
+}
+cv.error.10</code></pre>
+<pre><code>## [1] 24.25878 19.29201 19.35137 19.61177 18.99580</code></pre>
+<pre class="r"><code>plot(degree, cv.error, type = &quot;b&quot;)
+lines(degree, cv.error.10, type = &quot;b&quot;, col = &quot;red&quot;)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-13-1.png" width="672" />
+# BootStrap Validation
+## Estimation of accuracy of a linear model</p>
+<pre class="r"><code>boot.fn &lt;- function(data, index){
+  return(coef(lm(mpg~horsepower, data = data, subset = index)))
+}
+boot.fn(Auto, 1:392)</code></pre>
+<pre><code>## (Intercept)  horsepower 
+##  39.9358610  -0.1578447</code></pre>
+<div id="test" class="section level3">
+<h3>Test</h3>
+<pre class="r"><code>set.seed(1)
+boot.fn(Auto, sample(392, 392, replace = T))</code></pre>
+<pre><code>## (Intercept)  horsepower 
+##  40.3404517  -0.1634868</code></pre>
+</div>
+</div>
+<div id="run-the-boot-function-a-couple-times" class="section level2">
+<h2>Run the boot function a couple times</h2>
+<div id="is-the-number-of-samples" class="section level3">
+<h3>1000 is the number of samples</h3>
+<pre class="r"><code>boot.out &lt;- boot(Auto, boot.fn, 1000)</code></pre>
+</div>
+</div>
+<div id="plot-to-see-the-relationship" class="section level2">
+<h2>Plot to see the relationship</h2>
+<pre class="r"><code>plot(boot.out)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+</div>
+</div>
