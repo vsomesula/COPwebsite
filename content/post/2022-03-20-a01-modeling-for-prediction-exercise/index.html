@@ -10,19 +10,31 @@ tags: []
 <script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
 
 
-<p>#Questions
-###a) LOOCV is better than k-fold cross validation in some cases where the most accurate estimate of the machine learning model is neccesary since it reduces bias by using all the data. However, since it is essentially a k-fold cross validation method where the number of partitions is equal to the sample size it will take up a lot of time and computer resources making it a model that scales with a dataset size very poorly. In the same vein single split validation will be worse than k fold cross validation in all cases where k&gt;2 because a single split validation is essentially just saying split the data into two groups: one model and one test. If there is significant variation between the groups in terms of data then the single split validation will preform poorly. Essentially in terms of accuracy for cross validation it goes single split, k-fold, and LOOCV but the amount of time and resources needed also increases in that order.
-###b)The advantages of bootstrapping is that it does not really on assuming the shape of the population since it is constantly drawing samples from the data one provided to make its infernce(bootstrapping model assumes this sampling with repetition is similar to sampling from the population. However, for this reason it will work poorly on small data sets since it cannot extrapolate any info from the data provided (whereas other models may assume the shape of the population and if this assumption is wrong may produce a wrong sampling statistic)
-c) Getting data from github below
-d)For the k-fold cross validation method x1-x4 were variables that were tried and x5, x6 were ignored as latitude and longitude without any context(i.e. country or city) would not be a good variable. A loop was ran to determine the error for K values 1-10 and each graph contained info for polynomial degree 1-10 which was done for each variable. Based on this, I saw that for the variable x4, generally speaking the error was generally less and the range of error for each of the polynomial degrees was less as well. Furthermore, some of the other plots plateaued the error near 0 as the degrees went near 6-10 which was a sign of overfitting. For x4, the error was the lowest near degree = 6 and for this reason I believe the x4 variable or number of convenience stores with a sixth degree fitting with a K of 10 is the best model.
-e) For the boostrapping validation method,looking at the histogram x4 variable seemed to have the histogram with the distribution looking most like the normal distribution and this did not change much with sample size unless going to the extremes such as sample size of 10. Furthermore, once the degree for the polynomial got to 5-7 there was not much variation between these graphs and this means our results above from k fold were corrborated and we obtained the equation for x4 at degree 6 fitting.
-# Setup</p>
+<div id="questions" class="section level1">
+<h1>Questions</h1>
+<div id="a-loocv-is-better-than-k-fold-cross-validation-in-some-cases-where-the-most-accurate-estimate-of-the-machine-learning-model-is-neccesary-since-it-reduces-bias-by-using-all-the-data.-however-since-it-is-essentially-a-k-fold-cross-validation-method-where-the-number-of-partitions-is-equal-to-the-sample-size-it-will-take-up-a-lot-of-time-and-computer-resources-making-it-a-model-that-scales-with-a-dataset-size-very-poorly.-in-the-same-vein-single-split-validation-will-be-worse-than-k-fold-cross-validation-in-all-cases-where-k2-because-a-single-split-validation-is-essentially-just-saying-split-the-data-into-two-groups-one-model-and-one-test.-if-there-is-significant-variation-between-the-groups-in-terms-of-data-then-the-single-split-validation-will-preform-poorly.-essentially-in-terms-of-accuracy-for-cross-validation-it-goes-single-split-k-fold-and-loocv-but-the-amount-of-time-and-resources-needed-also-increases-in-that-order." class="section level3">
+<h3>a) LOOCV is better than k-fold cross validation in some cases where the most accurate estimate of the machine learning model is neccesary since it reduces bias by using all the data. However, since it is essentially a k-fold cross validation method where the number of partitions is equal to the sample size it will take up a lot of time and computer resources making it a model that scales with a dataset size very poorly. In the same vein single split validation will be worse than k fold cross validation in all cases where k&gt;2 because a single split validation is essentially just saying split the data into two groups: one model and one test. If there is significant variation between the groups in terms of data then the single split validation will preform poorly. Essentially in terms of accuracy for cross validation it goes single split, k-fold, and LOOCV but the amount of time and resources needed also increases in that order.</h3>
+</div>
+<div id="bthe-advantages-of-bootstrapping-is-that-it-does-not-really-on-assuming-the-shape-of-the-population-since-it-is-constantly-drawing-samples-from-the-data-one-provided-to-make-its-inferncebootstrapping-model-assumes-this-sampling-with-repetition-is-similar-to-sampling-from-the-population.-however-for-this-reason-it-will-work-poorly-on-small-data-sets-since-it-cannot-extrapolate-any-info-from-the-data-provided-whereas-other-models-may-assume-the-shape-of-the-population-and-if-this-assumption-is-wrong-may-produce-a-wrong-sampling-statistic" class="section level3">
+<h3>b)The advantages of bootstrapping is that it does not really on assuming the shape of the population since it is constantly drawing samples from the data one provided to make its infernce(bootstrapping model assumes this sampling with repetition is similar to sampling from the population. However, for this reason it will work poorly on small data sets since it cannot extrapolate any info from the data provided (whereas other models may assume the shape of the population and if this assumption is wrong may produce a wrong sampling statistic)</h3>
+</div>
+<div id="c-getting-data-from-github-below" class="section level3">
+<h3>c) Getting data from github below</h3>
+</div>
+<div id="dfor-the-k-fold-cross-validation-method-x1-x4-were-variables-that-were-tried-and-x5-x6-were-ignored-as-latitude-and-longitude-without-any-contexti.e.-country-or-city-would-not-be-a-good-variable.-a-loop-was-ran-to-determine-the-error-for-k-values-1-10-and-each-graph-contained-info-for-polynomial-degree-1-10-which-was-done-for-each-variable.-based-on-this-i-saw-that-for-the-variable-x4-generally-speaking-the-error-was-generally-less-and-the-range-of-error-for-each-of-the-polynomial-degrees-was-less-as-well.-furthermore-some-of-the-other-plots-plateaued-the-error-near-0-as-the-degrees-went-near-6-10-which-was-a-sign-of-overfitting.-for-x4-the-error-was-the-lowest-near-degree-6-and-for-this-reason-i-believe-the-x4-variable-or-number-of-convenience-stores-with-a-sixth-degree-fitting-with-a-k-of-10-is-the-best-model." class="section level3">
+<h3>d)For the k-fold cross validation method x1-x4 were variables that were tried and x5, x6 were ignored as latitude and longitude without any context(i.e. country or city) would not be a good variable. A loop was ran to determine the error for K values 1-10 and each graph contained info for polynomial degree 1-10 which was done for each variable. Based on this, I saw that for the variable x4, generally speaking the error was generally less and the range of error for each of the polynomial degrees was less as well. Furthermore, some of the other plots plateaued the error near 0 as the degrees went near 6-10 which was a sign of overfitting. For x4, the error was the lowest near degree = 6 and for this reason I believe the x4 variable or number of convenience stores with a sixth degree fitting with a K of 10 is the best model.</h3>
+</div>
+<div id="e-for-the-boostrapping-validation-methodlooking-at-the-histogram-x4-variable-seemed-to-have-the-histogram-with-the-distribution-looking-most-like-the-normal-distribution-and-this-did-not-change-much-with-sample-size-unless-going-to-the-extremes-such-as-sample-size-of-10.-furthermore-once-the-degree-for-the-polynomial-got-to-5-7-there-was-not-much-variation-between-these-graphs-and-this-means-our-results-above-from-k-fold-were-corrborated-and-we-obtained-the-equation-for-x4-at-degree-6-fitting." class="section level3">
+<h3>e) For the boostrapping validation method,looking at the histogram x4 variable seemed to have the histogram with the distribution looking most like the normal distribution and this did not change much with sample size unless going to the extremes such as sample size of 10. Furthermore, once the degree for the polynomial got to 5-7 there was not much variation between these graphs and this means our results above from k fold were corrborated and we obtained the equation for x4 at degree 6 fitting.</h3>
+</div>
+</div>
+<div id="setup" class="section level1">
+<h1>Setup</h1>
 <pre class="r"><code>library(ISLR)</code></pre>
 <pre><code>## Warning: package &#39;ISLR&#39; was built under R version 4.1.3</code></pre>
 <pre class="r"><code>library(boot)</code></pre>
 <pre><code>## Warning: package &#39;boot&#39; was built under R version 4.1.3</code></pre>
-<pre class="r"><code>library(readxl)
-library(dplyr)</code></pre>
+<pre class="r"><code>library(dplyr)</code></pre>
 <pre><code>## 
 ## Attaching package: &#39;dplyr&#39;</code></pre>
 <pre><code>## The following objects are masked from &#39;package:stats&#39;:
@@ -31,9 +43,19 @@ library(dplyr)</code></pre>
 <pre><code>## The following objects are masked from &#39;package:base&#39;:
 ## 
 ##     intersect, setdiff, setequal, union</code></pre>
-<pre class="r"><code>real_estate &lt;- read_excel(&quot;C:/Users/prana/Downloads/Real estate valuation data set.xlsx&quot;)
-real_estate &lt;- rename(real_estate, &quot;x1&quot; = &#39;X1 transaction date&#39;, &quot;x2&quot; = &#39;X2 house age&#39;, &quot;x3&quot; = &#39;X3 distance to the nearest MRT station&#39;, &quot;x4&quot; = &#39;X4 number of convenience stores&#39;, &quot;x5&quot; = &#39;X5 latitude&#39;, &quot;x6&quot; = &#39;X6 longitude&#39;, y = &#39;Y house price of unit area&#39; )
+<pre class="r"><code>library(readr)
+
+real_estate &lt;- read_csv(&quot;https://raw.githubusercontent.com/vsomesula/COPwebsite/main/content/post/2022-03-20-a01-modeling-for-prediction-exercise/Real%20estate%20valuation%20data%20set.csv&quot;)</code></pre>
+<pre><code>## Rows: 414 Columns: 8</code></pre>
+<pre><code>## -- Column specification --------------------------------------------------------
+## Delimiter: &quot;,&quot;
+## dbl (8): No, X1 transaction date, X2 house age, X3 distance to the nearest M...
+## 
+## i Use `spec()` to retrieve the full column specification for this data.
+## i Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<pre class="r"><code>real_estate &lt;- rename(real_estate, &quot;x1&quot; = &#39;X1 transaction date&#39;, &quot;x2&quot; = &#39;X2 house age&#39;, &quot;x3&quot; = &#39;X3 distance to the nearest MRT station&#39;, &quot;x4&quot; = &#39;X4 number of convenience stores&#39;, &quot;x5&quot; = &#39;X5 latitude&#39;, &quot;x6&quot; = &#39;X6 longitude&#39;, y = &#39;Y house price of unit area&#39; )
 attach(real_estate)</code></pre>
+</div>
 <div id="k-fold-cross-validation" class="section level1">
 <h1>K fold Cross Validation</h1>
 <div id="ignore-x5-and-x6-i.e.-lattitude-and-longitude-as-without-contextcity-rural-etc-it-does-not-mean-anything" class="section level3">
