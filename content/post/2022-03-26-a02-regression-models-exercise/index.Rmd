@@ -9,8 +9,13 @@ tags: []
 # Setup
 ```{r}
 if(!require("pacman")) install.packages("pacman")
-pacman::p_load(pacman,readxl, magrittr, productplots, psych, RColorBrewer, tidyverse)
+pacman::p_load(pacman,readxl, magrittr, productplots, psych, RColorBrewer, tidyverse, boot)
+diamonds <- read_csv("https://raw.githubusercontent.com/vsomesula/COPwebsite/main/content/post/2022-03-26-a02-regression-models-exercise/Professor_Proposes_Data.csv")
+```
+```{r,echo=FALSE}
 diamonds <- read_excel("C:/Users/prana/Downloads/Professor_Proposes_Data.xlsx")
+```
+```{r}
 attach(diamonds)
 diamonds$Colour <- as.factor(Colour)
 diamonds$Clarity <- as.factor(Clarity)
@@ -97,12 +102,12 @@ count(diamonds, Wholesaler)
 
 ```
 # Explaotory Analysis
-## This type of model will give us an equation where we can use as many of the categorial variables as we want. We can imagine it as CutGx1 + CutIx2 + .. with their respective coefficents. With each duiamond if it has Cut level of G than x2, x3, etc for that category will be 0 leaving us only with the weight for Cut G. This will leave us a very convuluted model however as seen below. We will remove wholesaler as it is not mentioned by the professor
+## This type of model will give us an equation where we can use as many of the categorial variables as we want. We can imagine it as CutGx1 + CutIx2 + .. with their respective coefficents. With each duiamond if it has Cut level of G than x2, x3, etc for that category will be 0 leaving us only with the weight for Cut G. This will leave us a very convuluted model however as seen below. We will remove wholesaler as it is three different websites from which the information was obtained which means it should be three different models (i.e. wholesaler is not an indepdent variable)
 ```{r}
 lm.fit <- lm(Price~Carat + Colour + Clarity +Cut + Certification + Polish + Symmetry, data = diamonds)
 summary(lm.fit)
 ```
-## We can use this model for testing however through code to see the results
+## We can use this model for testing however through code to see the results. In a completely accurate world, if we had the wholesaler from which the professor was buying from (assuming it was 1,2, or 3) we could make three different models and see if he was getting a fair price for his diamond
 ```{r}
 df <- data.frame(Carat = 0.9, Colour = "J", Clarity = "SI2", Cut = "V", Certification = "GIA", Polish = "G", Symmetry = "V")
 as_tibble(df)
@@ -116,6 +121,24 @@ df$Symmetry <- as.factor(df$Symmetry)
 df
 predict(lm.fit, df )
 ```
+# Boot strap validation
+```{r}
+boot.fn <- function(data, index){
+  return(coef(lm(Price~Carat + Colour + Clarity +Cut + Certification + Polish + Symmetry+Wholesaler, data = diamonds)))
+}
+set.seed(1)
+boot.out <- boot(diamonds, boot.fn, 1000)
+plot(boot.out)
+```
+# K fold validation will not work unless we use stratified sort or use dummy variables
+```{r, error=TRUE}
+K = 10
+glm.fit <- glm(Price~ Carat + Colour + Clarity +Cut + Certification + Polish + Symmetry, data =  diamonds)
+cv.error <- cv.glm(diamonds, glm.fit, K = K)$delta[1]
+
+```
+
+
 
 
 <!-- ### Junk Transformation of Colour variable so that the groups of letter all correspond to the correct grouping -->

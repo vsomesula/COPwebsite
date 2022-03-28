@@ -15,9 +15,17 @@ tags: []
 <pre class="r"><code>if(!require(&quot;pacman&quot;)) install.packages(&quot;pacman&quot;)</code></pre>
 <pre><code>## Loading required package: pacman</code></pre>
 <pre><code>## Warning: package &#39;pacman&#39; was built under R version 4.1.3</code></pre>
-<pre class="r"><code>pacman::p_load(pacman,readxl, magrittr, productplots, psych, RColorBrewer, tidyverse)
-diamonds &lt;- read_excel(&quot;C:/Users/prana/Downloads/Professor_Proposes_Data.xlsx&quot;)
-attach(diamonds)
+<pre class="r"><code>pacman::p_load(pacman,readxl, magrittr, productplots, psych, RColorBrewer, tidyverse, boot)
+diamonds &lt;- read_csv(&quot;https://raw.githubusercontent.com/vsomesula/COPwebsite/main/content/post/2022-03-26-a02-regression-models-exercise/Professor_Proposes_Data.csv&quot;)</code></pre>
+<pre><code>## Rows: 440 Columns: 9</code></pre>
+<pre><code>## -- Column specification --------------------------------------------------------
+## Delimiter: &quot;,&quot;
+## chr (7): Colour, Clarity, Cut, Certification, Polish, Symmetry, Price
+## dbl (2): Carat, Wholesaler
+## 
+## i Use `spec()` to retrieve the full column specification for this data.
+## i Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<pre class="r"><code>attach(diamonds)
 diamonds$Colour &lt;- as.factor(Colour)
 diamonds$Clarity &lt;- as.factor(Clarity)
 diamonds$Cut &lt;- as.factor(Cut)
@@ -48,7 +56,7 @@ diamonds</code></pre>
     axis.title.x = element_blank(),
     legend.position = &quot;none&quot;
   )</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 <pre class="r"><code>count(diamonds, Carat)</code></pre>
 <pre><code>## # A tibble: 50 x 2
 ##    Carat     n
@@ -71,7 +79,7 @@ diamonds</code></pre>
     axis.title.x = element_blank(),
     legend.position = &quot;none&quot;
   )</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-2-2.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-4-2.png" width="672" /></p>
 <pre class="r"><code>count(diamonds, Colour)</code></pre>
 <pre><code>## # A tibble: 9 x 2
 ##   Colour     n
@@ -92,7 +100,7 @@ diamonds</code></pre>
     axis.title.x = element_blank(),
     legend.position = &quot;none&quot;
   )</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-2-3.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-4-3.png" width="672" /></p>
 <pre class="r"><code>count(diamonds, Clarity)</code></pre>
 <pre><code>## # A tibble: 9 x 2
 ##   Clarity     n
@@ -113,7 +121,7 @@ diamonds</code></pre>
     axis.title.x = element_blank(),
     legend.position = &quot;none&quot;
   )</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-2-4.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-4-4.png" width="672" /></p>
 <pre class="r"><code>count(diamonds, Cut)</code></pre>
 <pre><code>## # A tibble: 5 x 2
 ##   Cut       n
@@ -130,7 +138,7 @@ diamonds</code></pre>
     axis.title.x = element_blank(),
     legend.position = &quot;none&quot;
   )</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-2-5.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-4-5.png" width="672" /></p>
 <pre class="r"><code>count(diamonds, Certification)</code></pre>
 <pre><code>## # A tibble: 5 x 2
 ##   Certification     n
@@ -147,7 +155,7 @@ diamonds</code></pre>
     axis.title.x = element_blank(),
     legend.position = &quot;none&quot;
   )</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-2-6.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-4-6.png" width="672" /></p>
 <pre class="r"><code>count(diamonds, Polish)</code></pre>
 <pre><code>## # A tibble: 6 x 2
 ##   Polish     n
@@ -165,7 +173,7 @@ diamonds</code></pre>
     axis.title.x = element_blank(),
     legend.position = &quot;none&quot;
   )</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-2-7.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-4-7.png" width="672" /></p>
 <pre class="r"><code>count(diamonds, Symmetry)</code></pre>
 <pre><code>## # A tibble: 5 x 2
 ##   Symmetry     n
@@ -182,7 +190,7 @@ diamonds</code></pre>
     axis.title.x = element_blank(),
     legend.position = &quot;none&quot;
   )</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-2-8.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-4-8.png" width="672" /></p>
 <pre class="r"><code>count(diamonds, Wholesaler)</code></pre>
 <pre><code>## # A tibble: 3 x 2
 ##   Wholesaler     n
@@ -193,8 +201,8 @@ diamonds</code></pre>
 </div>
 <div id="explaotory-analysis" class="section level1">
 <h1>Explaotory Analysis</h1>
-<div id="this-type-of-model-will-give-us-an-equation-where-we-can-use-as-many-of-the-categorial-variables-as-we-want.-we-can-imagine-it-as-cutgx1-cutix2-..-with-their-respective-coefficents.-with-each-duiamond-if-it-has-cut-level-of-g-than-x2-x3-etc-for-that-category-will-be-0-leaving-us-only-with-the-weight-for-cut-g.-this-will-leave-us-a-very-convuluted-model-however-as-seen-below.-we-will-remove-wholesaler-as-it-is-not-mentioned-by-the-professor" class="section level2">
-<h2>This type of model will give us an equation where we can use as many of the categorial variables as we want. We can imagine it as CutGx1 + CutIx2 + .. with their respective coefficents. With each duiamond if it has Cut level of G than x2, x3, etc for that category will be 0 leaving us only with the weight for Cut G. This will leave us a very convuluted model however as seen below. We will remove wholesaler as it is not mentioned by the professor</h2>
+<div id="this-type-of-model-will-give-us-an-equation-where-we-can-use-as-many-of-the-categorial-variables-as-we-want.-we-can-imagine-it-as-cutgx1-cutix2-..-with-their-respective-coefficents.-with-each-duiamond-if-it-has-cut-level-of-g-than-x2-x3-etc-for-that-category-will-be-0-leaving-us-only-with-the-weight-for-cut-g.-this-will-leave-us-a-very-convuluted-model-however-as-seen-below.-we-will-remove-wholesaler-as-it-is-three-different-websites-from-which-the-information-was-obtained-which-means-it-should-be-three-different-models-i.e.-wholesaler-is-not-an-indepdent-variable" class="section level2">
+<h2>This type of model will give us an equation where we can use as many of the categorial variables as we want. We can imagine it as CutGx1 + CutIx2 + .. with their respective coefficents. With each duiamond if it has Cut level of G than x2, x3, etc for that category will be 0 leaving us only with the weight for Cut G. This will leave us a very convuluted model however as seen below. We will remove wholesaler as it is three different websites from which the information was obtained which means it should be three different models (i.e. wholesaler is not an indepdent variable)</h2>
 <pre class="r"><code>lm.fit &lt;- lm(Price~Carat + Colour + Clarity +Cut + Certification + Polish + Symmetry, data = diamonds)
 summary(lm.fit)</code></pre>
 <pre><code>## 
@@ -250,8 +258,8 @@ summary(lm.fit)</code></pre>
 ## Multiple R-squared:  0.974,  Adjusted R-squared:  0.9719 
 ## F-statistic: 460.4 on 33 and 406 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
-<div id="we-can-use-this-model-for-testing-however-through-code-to-see-the-results" class="section level2">
-<h2>We can use this model for testing however through code to see the results</h2>
+<div id="we-can-use-this-model-for-testing-however-through-code-to-see-the-results.-in-a-completely-accurate-world-if-we-had-the-wholesaler-from-which-the-professor-was-buying-from-assuming-it-was-12-or-3-we-could-make-three-different-models-and-see-if-he-was-getting-a-fair-price-for-his-diamond" class="section level2">
+<h2>We can use this model for testing however through code to see the results. In a completely accurate world, if we had the wholesaler from which the professor was buying from (assuming it was 1,2, or 3) we could make three different models and see if he was getting a fair price for his diamond</h2>
 <pre class="r"><code>df &lt;- data.frame(Carat = 0.9, Colour = &quot;J&quot;, Clarity = &quot;SI2&quot;, Cut = &quot;V&quot;, Certification = &quot;GIA&quot;, Polish = &quot;G&quot;, Symmetry = &quot;V&quot;)
 as_tibble(df)</code></pre>
 <pre><code>## # A tibble: 1 x 7
@@ -273,6 +281,65 @@ df</code></pre>
 ## misleading</code></pre>
 <pre><code>##        1 
 ## 2797.542</code></pre>
+</div>
+</div>
+<div id="boot-strap-validation" class="section level1">
+<h1>Boot strap validation</h1>
+<pre class="r"><code>boot.fn &lt;- function(data, index){
+  return(coef(lm(Price~Carat + Colour + Clarity +Cut + Certification + Polish + Symmetry+Wholesaler, data = diamonds)))
+}
+set.seed(1)
+boot.out &lt;- boot(diamonds, boot.fn, 1000)
+plot(boot.out)</code></pre>
+<pre><code>## [1] &quot;All values of t* are equal to  788.883051812151&quot;</code></pre>
+</div>
+<div id="k-fold-validation-will-not-work-unless-we-use-stratified-sort-or-use-dummy-variables" class="section level1">
+<h1>K fold validation will not work unless we use stratified sort or use dummy variables</h1>
+<pre class="r"><code>K = 10
+glm.fit &lt;- glm(Price~ Carat + Colour + Clarity +Cut + Certification + Polish + Symmetry, data =  diamonds)
+cv.error &lt;- cv.glm(diamonds, glm.fit, K = K)$delta[1]</code></pre>
+<pre><code>## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
+## prediction from a rank-deficient fit may be misleading
+
+## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
+## prediction from a rank-deficient fit may be misleading
+
+## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
+## prediction from a rank-deficient fit may be misleading
+
+## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
+## prediction from a rank-deficient fit may be misleading
+
+## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
+## prediction from a rank-deficient fit may be misleading
+
+## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
+## prediction from a rank-deficient fit may be misleading
+
+## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
+## prediction from a rank-deficient fit may be misleading
+
+## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
+## prediction from a rank-deficient fit may be misleading
+
+## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
+## prediction from a rank-deficient fit may be misleading
+
+## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
+## prediction from a rank-deficient fit may be misleading
+
+## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
+## prediction from a rank-deficient fit may be misleading
+
+## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
+## prediction from a rank-deficient fit may be misleading
+
+## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
+## prediction from a rank-deficient fit may be misleading
+
+## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
+## prediction from a rank-deficient fit may be misleading</code></pre>
+<pre><code>## Error in model.frame.default(Terms, newdata, na.action = na.action, xlev = object$xlevels): factor Certification has new levels DOW</code></pre>
 <!-- ### Junk Transformation of Colour variable so that the groups of letter all correspond to the correct grouping -->
 <!-- ```{r} -->
 <!-- for(v in 1:440){ -->
@@ -313,5 +380,4 @@ df</code></pre>
 <!--   #} -->
 <!-- #} -->
 <!-- ``` -->
-</div>
 </div>
