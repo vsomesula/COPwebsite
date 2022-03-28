@@ -1,0 +1,169 @@
+---
+title: 'A02: Regression Models Exercise'
+author: ''
+date: '2022-03-26'
+slug: a02-regression-models-exercise
+categories: []
+tags: []
+---
+# Setup
+```{r}
+if(!require("pacman")) install.packages("pacman")
+pacman::p_load(pacman,readxl, magrittr, productplots, psych, RColorBrewer, tidyverse)
+diamonds <- read_excel("C:/Users/prana/Downloads/Professor_Proposes_Data.xlsx")
+attach(diamonds)
+diamonds$Colour <- as.factor(Colour)
+diamonds$Clarity <- as.factor(Clarity)
+diamonds$Cut <- as.factor(Cut)
+diamonds$Certification <- as.factor(Certification)
+diamonds$Polish <- as.factor(Polish)
+diamonds$Symmetry <- as.factor(Symmetry)
+diamonds$Wholesaler <- as.factor(Wholesaler)
+diamonds
+```
+#Graphing and frequency counting of each variable
+```{r}
+diamonds %>%
+  ggplot() +
+  geom_bar(aes(Carat, fill =  Carat)) +
+  theme(
+    axis.title.x = element_blank(),
+    legend.position = "none"
+  )
+count(diamonds, Carat)
+
+diamonds %>%
+  ggplot() +
+  geom_bar(aes(Colour, fill =  Colour)) +
+  theme(
+    axis.title.x = element_blank(),
+    legend.position = "none"
+  )
+count(diamonds, Colour)
+
+diamonds %>%
+  ggplot() +
+  geom_bar(aes(Clarity, fill =  Clarity)) +
+  theme(
+    axis.title.x = element_blank(),
+    legend.position = "none"
+  )
+count(diamonds, Clarity)
+
+diamonds %>%
+  ggplot() +
+  geom_bar(aes(Cut, fill =  Cut)) +
+  theme(
+    axis.title.x = element_blank(),
+    legend.position = "none"
+  )
+count(diamonds, Cut)
+
+diamonds %>%
+  ggplot() +
+  geom_bar(aes(Certification, fill =  Certification)) +
+  theme(
+    axis.title.x = element_blank(),
+    legend.position = "none"
+  )
+count(diamonds, Certification)
+
+diamonds %>%
+  ggplot() +
+  geom_bar(aes(Polish, fill =  Polish)) +
+  theme(
+    axis.title.x = element_blank(),
+    legend.position = "none"
+  )
+count(diamonds, Polish)
+
+diamonds %>%
+  ggplot() +
+  geom_bar(aes(Symmetry, fill =  Symmetry)) +
+  theme(
+    axis.title.x = element_blank(),
+    legend.position = "none"
+  )
+count(diamonds, Symmetry)
+
+diamonds %>%
+  ggplot() +
+  geom_bar(aes(Wholesaler, fill =  Wholesaler)) +
+  theme(
+    axis.title.x = element_blank(),
+    legend.position = "none"
+  )
+count(diamonds, Wholesaler)
+
+```
+# Explaotory Analysis
+## This type of model will give us an equation where we can use as many of the categorial variables as we want. We can imagine it as CutGx1 + CutIx2 + .. with their respective coefficents. With each duiamond if it has Cut level of G than x2, x3, etc for that category will be 0 leaving us only with the weight for Cut G. This will leave us a very convuluted model however as seen below
+```{r}
+lm.fit <- lm(Price~Carat + Colour + Clarity +Cut + Certification + Polish + Symmetry + Wholesaler, data = diamonds)
+summary(lm.fit)
+```
+## We can use this model for testing however through code to see the results
+```{r}
+#df <- data.frame()
+```
+
+<!-- ### Junk Transformation of Colour variable so that the groups of letter all correspond to the correct grouping -->
+<!-- ```{r} -->
+<!-- for(v in 1:440){ -->
+<!-- if(diamonds$Colour[v] == "D"|| diamonds$Colour[v] == "E"|| diamonds$Colour[v] == "F") -->
+<!-- { -->
+<!--   diamonds$Colour[v] = 1 -->
+<!-- } else if(diamonds$Colour[v] == "G"|| diamonds$Colour[v] == "H"|| diamonds$Colour[v] == "I") { -->
+<!--   diamonds$Colour[v] = 2 -->
+
+<!-- } else if(diamonds$Colour[v] == "J"|| diamonds$Colour[v] == "K") { -->
+<!--   diamonds$Colour[v] = 3 -->
+
+<!-- } else if(diamonds$Colour[v] == "L"|| diamonds$Colour[v] == "M"|| diamonds$Colour[v] == "N") { -->
+<!--   diamonds$Colour[v] = 4 -->
+
+<!-- } else if(diamonds$Colour[v] == "O"|| diamonds$Colour[v] == "P"|| diamonds$Colour[v] == "Q"|| diamonds$Colour[v] == "R"|| diamonds$Colour[v] == "S") { -->
+<!--   diamonds$Colour[v] = 5 -->
+
+<!-- } else  { -->
+<!--   diamonds$Colour[v] = 6 -->
+
+<!-- }  -->
+
+<!-- } -->
+<!-- ``` -->
+
+
+
+
+
+
+<!-- #### Junk -->
+<!-- ```{r} -->
+<!-- diamonds <- read_excel("C:/Users/prana/Downloads/Professor_Proposes_Data.xlsx") -->
+<!-- attach(diamonds) -->
+<!-- diamonds$Colour[1] = "I" -->
+<!-- if(diamonds$Colour[5] == "I" || diamonds$Colour[5] == "J") -->
+<!-- { -->
+<!--   diamonds$Colour[5] = 1 -->
+<!-- } -->
+<!-- diamonds$Colour[5] -->
+<!-- #lm.fit <- lm(Price ~ Cut, data = diamonds) -->
+<!-- #lm.fit -->
+
+
+
+<!-- diamond_col_name <- colnames(diamonds) -->
+
+<!-- #for (d in 1:9) { -->
+<!--  # if(d !==8){ -->
+<!--   #  lmfao[d] <- diamond_col_name[d] -->
+<!--    # ggplot(diamonds, aes(x = diamond_col_name[d])) + -->
+<!--              #geom_bar() -->
+<!--   #} -->
+<!-- #} -->
+
+<!-- ``` -->
+
+
+

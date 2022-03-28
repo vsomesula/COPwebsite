@@ -28,16 +28,17 @@ attach(real_estate)
 ### Ignore x5 and x6 i.e. lattitude and longitude as without context(city, rural, etc) it does not mean anything
 
 ```{r}
-#var_cycle <- c(x1, x2, x3, x4)
+set.seed(10)
+var_cycle <- c("x1", "x2", "x3", "x4")
 KValue <- 2:10
 for(K in KValue){
 degree <- 1:10  
 cv.error <- rep(0, max(degree))
 for(d in degree){
- # for(v in var_cycle){
-  glm.fit <- glm(y~poly(x4, d), data =  real_estate)
+  for(v in var_cycle){
+  glm.fit <- glm(y~poly(v, d), data =  real_estate)
   cv.error[d] <- cv.glm(real_estate, glm.fit, K = K)$delta[1]
-  #}
+  }
 }
 cv.error
 plot(degree, cv.error, type = "b")
@@ -56,6 +57,32 @@ boot.fn(real_estate, sample(414, 414, replace = T))
 boot.out <- boot(real_estate, boot.fn, 500)
 plot(boot.out)
 ```
+# Fake Code
+```{r}
+names <- 1:7
+col <- array(dim = 6)
+for(n in names){
+col[n] <- colnames(real_estate)[n]
+}
+plot(col[2], y)
+plot(x1, y)
+plot(x2, y)
+plot(x3, y)
+plot(x4, y)
+plot(x5, y)
+plot(x6, y)
+
+loadWorkbook_url <- function(url) {
+    temp_file <- tempfile(fileext = ".xlsx")
+    download.file(url = url, destfile = temp_file, mode = "wb", quiet = TRUE)
+    loadWorkbook(temp_file)
+    
+    temp_file <- tempfile(fileext = ".xlsx")
+req <- GET(github_link, write_disk(path = temp_file))
+tab <- readxl::read_excel(temp_file)
+}
+```
+
 
 
 

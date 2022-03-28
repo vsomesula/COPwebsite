@@ -1,0 +1,299 @@
+---
+title: 'A02: Regression Models Exercise'
+author: ''
+date: '2022-03-26'
+slug: a02-regression-models-exercise
+categories: []
+tags: []
+---
+
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
+
+
+<div id="setup" class="section level1">
+<h1>Setup</h1>
+<pre class="r"><code>if(!require(&quot;pacman&quot;)) install.packages(&quot;pacman&quot;)</code></pre>
+<pre><code>## Loading required package: pacman</code></pre>
+<pre><code>## Warning: package &#39;pacman&#39; was built under R version 4.1.3</code></pre>
+<pre class="r"><code>pacman::p_load(pacman,readxl, magrittr, productplots, psych, RColorBrewer, tidyverse)
+diamonds &lt;- read_excel(&quot;C:/Users/prana/Downloads/Professor_Proposes_Data.xlsx&quot;)
+attach(diamonds)
+diamonds$Colour &lt;- as.factor(Colour)
+diamonds$Clarity &lt;- as.factor(Clarity)
+diamonds$Cut &lt;- as.factor(Cut)
+diamonds$Certification &lt;- as.factor(Certification)
+diamonds$Polish &lt;- as.factor(Polish)
+diamonds$Symmetry &lt;- as.factor(Symmetry)
+diamonds$Wholesaler &lt;- as.factor(Wholesaler)
+diamonds</code></pre>
+<pre><code>## # A tibble: 440 x 9
+##    Carat Colour Clarity Cut   Certification Polish Symmetry Price Wholesaler
+##    &lt;dbl&gt; &lt;fct&gt;  &lt;fct&gt;   &lt;fct&gt; &lt;fct&gt;         &lt;fct&gt;  &lt;fct&gt;    &lt;dbl&gt; &lt;fct&gt;     
+##  1  0.92 I      SI2     G     AGS           V      V         3000 1         
+##  2  0.92 I      SI2     V     AGS           G      G         3000 1         
+##  3  0.82 F      SI2     I     GIA           X      X         3004 1         
+##  4  0.81 G      SI1     I     GIA           X      V         3004 1         
+##  5  0.9  J      VS2     V     GIA           V      V         3006 1         
+##  6  0.87 F      SI2     I     AGS           G      V         3007 1         
+##  7  0.8  D      SI2     I     GIA           V      V         3008 1         
+##  8  0.84 F      SI1     G     GIA           V      V         3010 1         
+##  9  0.8  D      SI2     V     GIA           V      V         3012 1         
+## 10  0.8  D      SI2     V     GIA           V      X         3012 1         
+## # ... with 430 more rows</code></pre>
+<p>#Graphing and frequency counting of each variable</p>
+<pre class="r"><code>diamonds %&gt;%
+  ggplot() +
+  geom_bar(aes(Carat, fill =  Carat)) +
+  theme(
+    axis.title.x = element_blank(),
+    legend.position = &quot;none&quot;
+  )</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<pre class="r"><code>count(diamonds, Carat)</code></pre>
+<pre><code>## # A tibble: 50 x 2
+##    Carat     n
+##    &lt;dbl&gt; &lt;int&gt;
+##  1  0.09     5
+##  2  0.1     13
+##  3  0.11     5
+##  4  0.2      1
+##  5  0.21     7
+##  6  0.22     5
+##  7  0.23     7
+##  8  0.27     1
+##  9  0.28     2
+## 10  0.3    154
+## # ... with 40 more rows</code></pre>
+<pre class="r"><code>diamonds %&gt;%
+  ggplot() +
+  geom_bar(aes(Colour, fill =  Colour)) +
+  theme(
+    axis.title.x = element_blank(),
+    legend.position = &quot;none&quot;
+  )</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-2-2.png" width="672" /></p>
+<pre class="r"><code>count(diamonds, Colour)</code></pre>
+<pre><code>## # A tibble: 9 x 2
+##   Colour     n
+##   &lt;fct&gt;  &lt;int&gt;
+## 1 D         20
+## 2 E         54
+## 3 F         58
+## 4 G         43
+## 5 H         71
+## 6 I         79
+## 7 J         72
+## 8 K         31
+## 9 L         12</code></pre>
+<pre class="r"><code>diamonds %&gt;%
+  ggplot() +
+  geom_bar(aes(Clarity, fill =  Clarity)) +
+  theme(
+    axis.title.x = element_blank(),
+    legend.position = &quot;none&quot;
+  )</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-2-3.png" width="672" /></p>
+<pre class="r"><code>count(diamonds, Clarity)</code></pre>
+<pre><code>## # A tibble: 9 x 2
+##   Clarity     n
+##   &lt;fct&gt;   &lt;int&gt;
+## 1 I1         82
+## 2 I2         28
+## 3 SI1       116
+## 4 SI2       110
+## 5 SI3        26
+## 6 VS1        30
+## 7 VS2        41
+## 8 VVS1        2
+## 9 VVS2        5</code></pre>
+<pre class="r"><code>diamonds %&gt;%
+  ggplot() +
+  geom_bar(aes(Cut, fill =  Cut)) +
+  theme(
+    axis.title.x = element_blank(),
+    legend.position = &quot;none&quot;
+  )</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-2-4.png" width="672" /></p>
+<pre class="r"><code>count(diamonds, Cut)</code></pre>
+<pre><code>## # A tibble: 5 x 2
+##   Cut       n
+##   &lt;fct&gt; &lt;int&gt;
+## 1 F        59
+## 2 G        49
+## 3 I        86
+## 4 V        97
+## 5 X       149</code></pre>
+<pre class="r"><code>diamonds %&gt;%
+  ggplot() +
+  geom_bar(aes(Certification, fill =  Certification)) +
+  theme(
+    axis.title.x = element_blank(),
+    legend.position = &quot;none&quot;
+  )</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-2-5.png" width="672" /></p>
+<pre class="r"><code>count(diamonds, Certification)</code></pre>
+<pre><code>## # A tibble: 5 x 2
+##   Certification     n
+##   &lt;fct&gt;         &lt;int&gt;
+## 1 AGS              12
+## 2 DOW               1
+## 3 EGL             119
+## 4 GIA             265
+## 5 IGI              43</code></pre>
+<pre class="r"><code>diamonds %&gt;%
+  ggplot() +
+  geom_bar(aes(Polish, fill =  Polish)) +
+  theme(
+    axis.title.x = element_blank(),
+    legend.position = &quot;none&quot;
+  )</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-2-6.png" width="672" /></p>
+<pre class="r"><code>count(diamonds, Polish)</code></pre>
+<pre><code>## # A tibble: 6 x 2
+##   Polish     n
+##   &lt;fct&gt;  &lt;int&gt;
+## 1 F          5
+## 2 G        165
+## 3 I          5
+## 4 v          1
+## 5 V        203
+## 6 X         61</code></pre>
+<pre class="r"><code>diamonds %&gt;%
+  ggplot() +
+  geom_bar(aes(Symmetry, fill =  Symmetry)) +
+  theme(
+    axis.title.x = element_blank(),
+    legend.position = &quot;none&quot;
+  )</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-2-7.png" width="672" /></p>
+<pre class="r"><code>count(diamonds, Symmetry)</code></pre>
+<pre><code>## # A tibble: 5 x 2
+##   Symmetry     n
+##   &lt;fct&gt;    &lt;int&gt;
+## 1 F           21
+## 2 G          157
+## 3 I            5
+## 4 V          206
+## 5 X           51</code></pre>
+<pre class="r"><code>diamonds %&gt;%
+  ggplot() +
+  geom_bar(aes(Wholesaler, fill =  Wholesaler)) +
+  theme(
+    axis.title.x = element_blank(),
+    legend.position = &quot;none&quot;
+  )</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-2-8.png" width="672" /></p>
+<pre class="r"><code>count(diamonds, Wholesaler)</code></pre>
+<pre><code>## # A tibble: 3 x 2
+##   Wholesaler     n
+##   &lt;fct&gt;      &lt;int&gt;
+## 1 1             60
+## 2 2            180
+## 3 3            200</code></pre>
+</div>
+<div id="explaotory-analysis" class="section level1">
+<h1>Explaotory Analysis</h1>
+<div id="this-type-of-model-will-give-us-an-equation-where-we-can-use-as-many-of-the-categorial-variables-as-we-want.-we-can-imagine-it-as-cutgx1-cutix2-..-with-their-respective-coefficents.-with-each-duiamond-if-it-has-cut-level-of-g-than-x2-x3-etc-for-that-category-will-be-0-leaving-us-only-with-the-weight-for-cut-g.-this-will-leave-us-a-very-convuluted-model-however-as-seen-below" class="section level2">
+<h2>This type of model will give us an equation where we can use as many of the categorial variables as we want. We can imagine it as CutGx1 + CutIx2 + .. with their respective coefficents. With each duiamond if it has Cut level of G than x2, x3, etc for that category will be 0 leaving us only with the weight for Cut G. This will leave us a very convuluted model however as seen below</h2>
+<pre class="r"><code>lm.fit &lt;- lm(Price~Carat + Colour + Clarity +Cut + Certification + Polish + Symmetry + Wholesaler, data = diamonds)
+summary(lm.fit)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = Price ~ Carat + Colour + Clarity + Cut + Certification + 
+##     Polish + Symmetry + Wholesaler, data = diamonds)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -448.24  -43.55   -4.72   51.02  536.93 
+## 
+## Coefficients: (1 not defined because of singularities)
+##                  Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)        788.88     161.04   4.899 1.40e-06 ***
+## Carat             1885.30     133.35  14.138  &lt; 2e-16 ***
+## ColourE           -166.61      39.34  -4.235 2.84e-05 ***
+## ColourF           -247.15      39.60  -6.241 1.10e-09 ***
+## ColourG           -229.60      40.56  -5.661 2.86e-08 ***
+## ColourH           -299.84      39.80  -7.534 3.25e-13 ***
+## ColourI           -337.63      40.15  -8.408 7.22e-16 ***
+## ColourJ           -434.39      42.54 -10.211  &lt; 2e-16 ***
+## ColourK           -696.43      49.50 -14.068  &lt; 2e-16 ***
+## ColourL           -895.44      59.31 -15.098  &lt; 2e-16 ***
+## ClarityI2         -590.10      39.59 -14.904  &lt; 2e-16 ***
+## ClaritySI1         652.28      37.31  17.483  &lt; 2e-16 ***
+## ClaritySI2         560.51      30.84  18.174  &lt; 2e-16 ***
+## ClaritySI3         290.46      37.18   7.812 4.90e-14 ***
+## ClarityVS1         743.08      49.56  14.993  &lt; 2e-16 ***
+## ClarityVS2         689.50      43.97  15.683  &lt; 2e-16 ***
+## ClarityVVS1       1015.21     117.33   8.652  &lt; 2e-16 ***
+## ClarityVVS2        760.50      77.08   9.867  &lt; 2e-16 ***
+## CutG                48.82      30.74   1.588 0.112993    
+## CutI                84.51      30.01   2.816 0.005097 ** 
+## CutV                78.45      30.50   2.572 0.010474 *  
+## CutX                93.37      26.52   3.521 0.000478 ***
+## CertificationDOW  -271.24     164.60  -1.648 0.100162    
+## CertificationEGL  -307.29      67.95  -4.522 8.06e-06 ***
+## CertificationGIA    12.16      60.44   0.201 0.840689    
+## CertificationIGI  -118.27      72.53  -1.631 0.103766    
+## PolishG             66.57      78.85   0.844 0.398992    
+## PolishI            247.70     115.61   2.142 0.032755 *  
+## Polishv            136.45     169.49   0.805 0.421232    
+## PolishV             78.40      81.68   0.960 0.337701    
+## PolishX             84.85      83.94   1.011 0.312691    
+## SymmetryG          133.37      42.42   3.144 0.001789 ** 
+## SymmetryI              NA         NA      NA       NA    
+## SymmetryV          151.49      45.28   3.346 0.000897 ***
+## SymmetryX          137.40      50.44   2.724 0.006732 ** 
+## Wholesaler2        112.07      49.94   2.244 0.025374 *  
+## Wholesaler3      -1460.67      78.10 -18.703  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 144.6 on 404 degrees of freedom
+## Multiple R-squared:  0.9861, Adjusted R-squared:  0.9849 
+## F-statistic: 817.9 on 35 and 404 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+<div id="we-can-use-this-model-for-testing-however-through-code-to-see-the-results" class="section level2">
+<h2>We can use this model for testing however through code to see the results</h2>
+<pre class="r"><code>#df &lt;- data.frame()</code></pre>
+<!-- ### Junk Transformation of Colour variable so that the groups of letter all correspond to the correct grouping -->
+<!-- ```{r} -->
+<!-- for(v in 1:440){ -->
+<!-- if(diamonds$Colour[v] == "D"|| diamonds$Colour[v] == "E"|| diamonds$Colour[v] == "F") -->
+<!-- { -->
+<!--   diamonds$Colour[v] = 1 -->
+<!-- } else if(diamonds$Colour[v] == "G"|| diamonds$Colour[v] == "H"|| diamonds$Colour[v] == "I") { -->
+<!--   diamonds$Colour[v] = 2 -->
+<!-- } else if(diamonds$Colour[v] == "J"|| diamonds$Colour[v] == "K") { -->
+<!--   diamonds$Colour[v] = 3 -->
+<!-- } else if(diamonds$Colour[v] == "L"|| diamonds$Colour[v] == "M"|| diamonds$Colour[v] == "N") { -->
+<!--   diamonds$Colour[v] = 4 -->
+<!-- } else if(diamonds$Colour[v] == "O"|| diamonds$Colour[v] == "P"|| diamonds$Colour[v] == "Q"|| diamonds$Colour[v] == "R"|| diamonds$Colour[v] == "S") { -->
+<!--   diamonds$Colour[v] = 5 -->
+<!-- } else  { -->
+<!--   diamonds$Colour[v] = 6 -->
+<!-- }  -->
+<!-- } -->
+<!-- ``` -->
+<!-- #### Junk -->
+<!-- ```{r} -->
+<!-- diamonds <- read_excel("C:/Users/prana/Downloads/Professor_Proposes_Data.xlsx") -->
+<!-- attach(diamonds) -->
+<!-- diamonds$Colour[1] = "I" -->
+<!-- if(diamonds$Colour[5] == "I" || diamonds$Colour[5] == "J") -->
+<!-- { -->
+<!--   diamonds$Colour[5] = 1 -->
+<!-- } -->
+<!-- diamonds$Colour[5] -->
+<!-- #lm.fit <- lm(Price ~ Cut, data = diamonds) -->
+<!-- #lm.fit -->
+<!-- diamond_col_name <- colnames(diamonds) -->
+<!-- #for (d in 1:9) { -->
+<!--  # if(d !==8){ -->
+<!--   #  lmfao[d] <- diamond_col_name[d] -->
+<!--    # ggplot(diamonds, aes(x = diamond_col_name[d])) + -->
+<!--              #geom_bar() -->
+<!--   #} -->
+<!-- #} -->
+<!-- ``` -->
+</div>
+</div>
