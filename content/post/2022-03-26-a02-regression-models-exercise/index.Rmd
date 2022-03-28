@@ -97,15 +97,26 @@ count(diamonds, Wholesaler)
 
 ```
 # Explaotory Analysis
-## This type of model will give us an equation where we can use as many of the categorial variables as we want. We can imagine it as CutGx1 + CutIx2 + .. with their respective coefficents. With each duiamond if it has Cut level of G than x2, x3, etc for that category will be 0 leaving us only with the weight for Cut G. This will leave us a very convuluted model however as seen below
+## This type of model will give us an equation where we can use as many of the categorial variables as we want. We can imagine it as CutGx1 + CutIx2 + .. with their respective coefficents. With each duiamond if it has Cut level of G than x2, x3, etc for that category will be 0 leaving us only with the weight for Cut G. This will leave us a very convuluted model however as seen below. We will remove wholesaler as it is not mentioned by the professor
 ```{r}
-lm.fit <- lm(Price~Carat + Colour + Clarity +Cut + Certification + Polish + Symmetry + Wholesaler, data = diamonds)
+lm.fit <- lm(Price~Carat + Colour + Clarity +Cut + Certification + Polish + Symmetry, data = diamonds)
 summary(lm.fit)
 ```
 ## We can use this model for testing however through code to see the results
 ```{r}
-#df <- data.frame()
+df <- data.frame(Carat = 0.9, Colour = "J", Clarity = "SI2", Cut = "V", Certification = "GIA", Polish = "G", Symmetry = "V")
+as_tibble(df)
+df$Colour <- as.factor(df$Colour)
+df$Clarity <- as.factor(df$Clarity)
+df$Cut <- as.factor(df$Cut)
+df$Certification <- as.factor(df$Certification)
+df$Polish <- as.factor(df$Polish)
+df$Symmetry <- as.factor(df$Symmetry)
+#df$Wholesaler <- as.factor(df$Wholesaler)
+df
+predict(lm.fit, df )
 ```
+
 
 <!-- ### Junk Transformation of Colour variable so that the groups of letter all correspond to the correct grouping -->
 <!-- ```{r} -->

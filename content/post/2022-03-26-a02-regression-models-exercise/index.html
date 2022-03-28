@@ -193,68 +193,86 @@ diamonds</code></pre>
 </div>
 <div id="explaotory-analysis" class="section level1">
 <h1>Explaotory Analysis</h1>
-<div id="this-type-of-model-will-give-us-an-equation-where-we-can-use-as-many-of-the-categorial-variables-as-we-want.-we-can-imagine-it-as-cutgx1-cutix2-..-with-their-respective-coefficents.-with-each-duiamond-if-it-has-cut-level-of-g-than-x2-x3-etc-for-that-category-will-be-0-leaving-us-only-with-the-weight-for-cut-g.-this-will-leave-us-a-very-convuluted-model-however-as-seen-below" class="section level2">
-<h2>This type of model will give us an equation where we can use as many of the categorial variables as we want. We can imagine it as CutGx1 + CutIx2 + .. with their respective coefficents. With each duiamond if it has Cut level of G than x2, x3, etc for that category will be 0 leaving us only with the weight for Cut G. This will leave us a very convuluted model however as seen below</h2>
-<pre class="r"><code>lm.fit &lt;- lm(Price~Carat + Colour + Clarity +Cut + Certification + Polish + Symmetry + Wholesaler, data = diamonds)
+<div id="this-type-of-model-will-give-us-an-equation-where-we-can-use-as-many-of-the-categorial-variables-as-we-want.-we-can-imagine-it-as-cutgx1-cutix2-..-with-their-respective-coefficents.-with-each-duiamond-if-it-has-cut-level-of-g-than-x2-x3-etc-for-that-category-will-be-0-leaving-us-only-with-the-weight-for-cut-g.-this-will-leave-us-a-very-convuluted-model-however-as-seen-below.-we-will-remove-wholesaler-as-it-is-not-mentioned-by-the-professor" class="section level2">
+<h2>This type of model will give us an equation where we can use as many of the categorial variables as we want. We can imagine it as CutGx1 + CutIx2 + .. with their respective coefficents. With each duiamond if it has Cut level of G than x2, x3, etc for that category will be 0 leaving us only with the weight for Cut G. This will leave us a very convuluted model however as seen below. We will remove wholesaler as it is not mentioned by the professor</h2>
+<pre class="r"><code>lm.fit &lt;- lm(Price~Carat + Colour + Clarity +Cut + Certification + Polish + Symmetry, data = diamonds)
 summary(lm.fit)</code></pre>
 <pre><code>## 
 ## Call:
 ## lm(formula = Price ~ Carat + Colour + Clarity + Cut + Certification + 
-##     Polish + Symmetry + Wholesaler, data = diamonds)
+##     Polish + Symmetry, data = diamonds)
 ## 
 ## Residuals:
 ##     Min      1Q  Median      3Q     Max 
-## -448.24  -43.55   -4.72   51.02  536.93 
+## -762.63  -82.58  -18.59  101.42  689.59 
 ## 
 ## Coefficients: (1 not defined because of singularities)
-##                  Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)        788.88     161.04   4.899 1.40e-06 ***
-## Carat             1885.30     133.35  14.138  &lt; 2e-16 ***
-## ColourE           -166.61      39.34  -4.235 2.84e-05 ***
-## ColourF           -247.15      39.60  -6.241 1.10e-09 ***
-## ColourG           -229.60      40.56  -5.661 2.86e-08 ***
-## ColourH           -299.84      39.80  -7.534 3.25e-13 ***
-## ColourI           -337.63      40.15  -8.408 7.22e-16 ***
-## ColourJ           -434.39      42.54 -10.211  &lt; 2e-16 ***
-## ColourK           -696.43      49.50 -14.068  &lt; 2e-16 ***
-## ColourL           -895.44      59.31 -15.098  &lt; 2e-16 ***
-## ClarityI2         -590.10      39.59 -14.904  &lt; 2e-16 ***
-## ClaritySI1         652.28      37.31  17.483  &lt; 2e-16 ***
-## ClaritySI2         560.51      30.84  18.174  &lt; 2e-16 ***
-## ClaritySI3         290.46      37.18   7.812 4.90e-14 ***
-## ClarityVS1         743.08      49.56  14.993  &lt; 2e-16 ***
-## ClarityVS2         689.50      43.97  15.683  &lt; 2e-16 ***
-## ClarityVVS1       1015.21     117.33   8.652  &lt; 2e-16 ***
-## ClarityVVS2        760.50      77.08   9.867  &lt; 2e-16 ***
-## CutG                48.82      30.74   1.588 0.112993    
-## CutI                84.51      30.01   2.816 0.005097 ** 
-## CutV                78.45      30.50   2.572 0.010474 *  
-## CutX                93.37      26.52   3.521 0.000478 ***
-## CertificationDOW  -271.24     164.60  -1.648 0.100162    
-## CertificationEGL  -307.29      67.95  -4.522 8.06e-06 ***
-## CertificationGIA    12.16      60.44   0.201 0.840689    
-## CertificationIGI  -118.27      72.53  -1.631 0.103766    
-## PolishG             66.57      78.85   0.844 0.398992    
-## PolishI            247.70     115.61   2.142 0.032755 *  
-## Polishv            136.45     169.49   0.805 0.421232    
-## PolishV             78.40      81.68   0.960 0.337701    
-## PolishX             84.85      83.94   1.011 0.312691    
-## SymmetryG          133.37      42.42   3.144 0.001789 ** 
-## SymmetryI              NA         NA      NA       NA    
-## SymmetryV          151.49      45.28   3.346 0.000897 ***
-## SymmetryX          137.40      50.44   2.724 0.006732 ** 
-## Wholesaler2        112.07      49.94   2.244 0.025374 *  
-## Wholesaler3      -1460.67      78.10 -18.703  &lt; 2e-16 ***
+##                    Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)      -1432.6219   146.6961  -9.766  &lt; 2e-16 ***
+## Carat             4205.3391    51.2981  81.978  &lt; 2e-16 ***
+## ColourE           -191.2462    53.5345  -3.572 0.000396 ***
+## ColourF           -311.1620    53.6267  -5.802 1.32e-08 ***
+## ColourG           -301.4412    54.5157  -5.529 5.76e-08 ***
+## ColourH           -430.3664    53.0617  -8.111 6.03e-15 ***
+## ColourI           -500.9400    53.0827  -9.437  &lt; 2e-16 ***
+## ColourJ           -635.8407    54.6431 -11.636  &lt; 2e-16 ***
+## ColourK           -985.9734    61.0240 -16.157  &lt; 2e-16 ***
+## ColourL          -1173.6677    76.3472 -15.373  &lt; 2e-16 ***
+## ClarityI2         -778.3139    50.8010 -15.321  &lt; 2e-16 ***
+## ClaritySI1         858.5738    43.2466  19.853  &lt; 2e-16 ***
+## ClaritySI2         731.5613    35.6145  20.541  &lt; 2e-16 ***
+## ClaritySI3         388.9407    49.2119   7.903 2.58e-14 ***
+## ClarityVS1        1025.1681    59.0373  17.365  &lt; 2e-16 ***
+## ClarityVS2         915.4216    53.2913  17.178  &lt; 2e-16 ***
+## ClarityVVS1       1342.8683   154.7169   8.680  &lt; 2e-16 ***
+## ClarityVVS2        918.2219   101.0745   9.085  &lt; 2e-16 ***
+## CutG                56.4835    41.8846   1.349 0.178233    
+## CutI                95.4908    40.9225   2.333 0.020112 *  
+## CutV                84.1675    41.5654   2.025 0.043527 *  
+## CutX                56.8290    35.7071   1.592 0.112269    
+## CertificationDOW  -500.9363   223.5204  -2.241 0.025558 *  
+## CertificationEGL  -418.0748    81.9208  -5.103 5.13e-07 ***
+## CertificationGIA   -64.8962    80.6771  -0.804 0.421640    
+## CertificationIGI     0.2533    94.8367   0.003 0.997871    
+## PolishG            210.9384   106.7503   1.976 0.048832 *  
+## PolishI            461.4891   156.8392   2.942 0.003443 ** 
+## Polishv            265.1641   230.8040   1.149 0.251286    
+## PolishV            226.5659   110.6450   2.048 0.041234 *  
+## PolishX            236.0952   113.7270   2.076 0.038524 *  
+## SymmetryG          108.1495    57.3953   1.884 0.060239 .  
+## SymmetryI                NA         NA      NA       NA    
+## SymmetryV          119.4279    61.2390   1.950 0.051841 .  
+## SymmetryX          113.5676    68.3626   1.661 0.097435 .  
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
-## Residual standard error: 144.6 on 404 degrees of freedom
-## Multiple R-squared:  0.9861, Adjusted R-squared:  0.9849 
-## F-statistic: 817.9 on 35 and 404 DF,  p-value: &lt; 2.2e-16</code></pre>
+## Residual standard error: 197.2 on 406 degrees of freedom
+## Multiple R-squared:  0.974,  Adjusted R-squared:  0.9719 
+## F-statistic: 460.4 on 33 and 406 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 <div id="we-can-use-this-model-for-testing-however-through-code-to-see-the-results" class="section level2">
 <h2>We can use this model for testing however through code to see the results</h2>
-<pre class="r"><code>#df &lt;- data.frame()</code></pre>
+<pre class="r"><code>df &lt;- data.frame(Carat = 0.9, Colour = &quot;J&quot;, Clarity = &quot;SI2&quot;, Cut = &quot;V&quot;, Certification = &quot;GIA&quot;, Polish = &quot;G&quot;, Symmetry = &quot;V&quot;)
+as_tibble(df)</code></pre>
+<pre><code>## # A tibble: 1 x 7
+##   Carat Colour Clarity Cut   Certification Polish Symmetry
+##   &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;   &lt;chr&gt; &lt;chr&gt;         &lt;chr&gt;  &lt;chr&gt;   
+## 1   0.9 J      SI2     V     GIA           G      V</code></pre>
+<pre class="r"><code>df$Colour &lt;- as.factor(df$Colour)
+df$Clarity &lt;- as.factor(df$Clarity)
+df$Cut &lt;- as.factor(df$Cut)
+df$Certification &lt;- as.factor(df$Certification)
+df$Polish &lt;- as.factor(df$Polish)
+df$Symmetry &lt;- as.factor(df$Symmetry)
+#df$Wholesaler &lt;- as.factor(df$Wholesaler)
+df</code></pre>
+<pre><code>##   Carat Colour Clarity Cut Certification Polish Symmetry
+## 1   0.9      J     SI2   V           GIA      G        V</code></pre>
+<pre class="r"><code>predict(lm.fit, df )</code></pre>
+<pre><code>## Warning in predict.lm(lm.fit, df): prediction from a rank-deficient fit may be
+## misleading</code></pre>
+<pre><code>##        1 
+## 2797.542</code></pre>
 <!-- ### Junk Transformation of Colour variable so that the groups of letter all correspond to the correct grouping -->
 <!-- ```{r} -->
 <!-- for(v in 1:440){ -->
