@@ -36,7 +36,7 @@ degree <- 1:10
 cv.error <- rep(0, max(degree))
 for(d in degree){
   for(v in var_cycle){
-  glm.fit <- glm(y~poly(v, d), data =  real_estate)
+  glm.fit <- glm(y~poly(real_estate$x1, d), data =  real_estate)
   cv.error[d] <- cv.glm(real_estate, glm.fit, K = K)$delta[1]
   }
 }

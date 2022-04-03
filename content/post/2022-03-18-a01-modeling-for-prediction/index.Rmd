@@ -111,6 +111,7 @@ boot.fn(Auto, sample(392, 392, replace = T))
 ### 1000 is the number of samples
 ```{r}
 boot.out <- boot(Auto, boot.fn, 1000)
+boot.out
 ```
 ## Plot to see the relationship
 ```{r}
