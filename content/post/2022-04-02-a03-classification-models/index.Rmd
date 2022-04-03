@@ -14,9 +14,9 @@ tags: []
 ```{r}
 if(!require("pacman")) install.packages("pacman")
 pacman::p_load(pacman,readxl, magrittr, productplots, psych, RColorBrewer, tidyverse, boot, InformationValue,caret)
-train <- read_csv("C:/Users/prana/Downloads/train.csv")
-test <- read_csv("C:/Users/prana/Downloads/test.csv")
-submission <- read_csv("C:/Users/prana/Downloads/submission.csv")
+train <- read_csv("https://raw.githubusercontent.com/vsomesula/COPwebsite/main/content/post/2022-04-02-a03-classification-models/train.csv")
+test <- read_csv("https://raw.githubusercontent.com/vsomesula/COPwebsite/main/content/post/2022-04-02-a03-classification-models/test.csv")
+submission <- read_csv("https://raw.githubusercontent.com/vsomesula/COPwebsite/main/content/post/2022-04-02-a03-classification-models/submission.csv")
 attach(train)
 ```
 # Exploratory Data Analyis
@@ -37,14 +37,17 @@ caret::varImp(model)
 ```
 ### A higher value means more importance for that variable. With this information, we can see that the order of how important each variable is Sex, Pclass, Age, and SibSp. Embarked could be included but is not likly to add much value (Especially, since if we obserbe the p-values above they are both above 0.1 which mains most scientists would consider them not significant). Additionally, Parch and Fare can be completly excluded as their values are much lower than the good predictors such as Pclass.
 
+### It is important to note that since not all passengers have age data we can not include this important variable in those model. Having that data point would cause there to be NA's for some of the passangers who do not have thar variable.
+
 # Building a logistic model with all variables determined to be important
 ```{r}
-model <- glm(formula = Survived~Pclass+Sex+SibSp+Age, data = train, family = 'binomial')
+model <- glm(formula = Survived~Pclass+Sex+SibSp, data = train, family = 'binomial')
 summary(model)
 ```
 ### Once again, we can obserbe the p-values being signficant for the variables we selected. We can see that this model is a better predictor than a model with all the variables since the AIC is lower for the new model.
 
 # Applying the model to the test data set to predict survivors
+#### The data may not display properly due to the long names of the passengners, however, the output is a dataframe with dimensions 418 x 3.
 ```{r}
 predictions <- predict(model, test, type = "response")
 output <- data.frame(test$PassengerId, test$Name, Survived = predictions )
@@ -57,5 +60,12 @@ output
 output$Survived = ifelse(output$Survived > 0.5, 1, 0)
 output
 ```
-
+### To determine, the power of our model we can compare our output dataframe against the submission csv file generated from the kaggle python script.
+```{r}
+compare <- data.frame(1:418)
+compare <- ifelse(output$Survived == submission$Survived, 1, 0)
+compare <- as.numeric(compare)
+table(compare)
+```
+### We see that 409 of the passangers match between the Kaggle and the model I have developed which suggests that my solution is fairly accurate. Furthermore, the Kaggle model uses the Parch variable which I have excluded only resulting in 9 differnces suggesting that the Parch variable is not a very high-yield predictor.
 

@@ -28,7 +28,7 @@ tags: []
 <pre><code>## Loading required package: pacman</code></pre>
 <pre><code>## Warning: package &#39;pacman&#39; was built under R version 4.1.3</code></pre>
 <pre class="r"><code>pacman::p_load(pacman,readxl, magrittr, productplots, psych, RColorBrewer, tidyverse, boot, InformationValue,caret)
-train &lt;- read_csv(&quot;C:/Users/prana/Downloads/train.csv&quot;)</code></pre>
+train &lt;- read_csv(&quot;https://raw.githubusercontent.com/vsomesula/COPwebsite/main/content/post/2022-04-02-a03-classification-models/train.csv&quot;)</code></pre>
 <pre><code>## Rows: 891 Columns: 12</code></pre>
 <pre><code>## -- Column specification --------------------------------------------------------
 ## Delimiter: &quot;,&quot;
@@ -37,7 +37,7 @@ train &lt;- read_csv(&quot;C:/Users/prana/Downloads/train.csv&quot;)</code></pre
 ## 
 ## i Use `spec()` to retrieve the full column specification for this data.
 ## i Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<pre class="r"><code>test &lt;- read_csv(&quot;C:/Users/prana/Downloads/test.csv&quot;)</code></pre>
+<pre class="r"><code>test &lt;- read_csv(&quot;https://raw.githubusercontent.com/vsomesula/COPwebsite/main/content/post/2022-04-02-a03-classification-models/test.csv&quot;)</code></pre>
 <pre><code>## Rows: 418 Columns: 11
 ## -- Column specification --------------------------------------------------------
 ## Delimiter: &quot;,&quot;
@@ -46,7 +46,7 @@ train &lt;- read_csv(&quot;C:/Users/prana/Downloads/train.csv&quot;)</code></pre
 ## 
 ## i Use `spec()` to retrieve the full column specification for this data.
 ## i Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<pre class="r"><code>submission &lt;- read_csv(&quot;C:/Users/prana/Downloads/submission.csv&quot;)</code></pre>
+<pre class="r"><code>submission &lt;- read_csv(&quot;https://raw.githubusercontent.com/vsomesula/COPwebsite/main/content/post/2022-04-02-a03-classification-models/submission.csv&quot;)</code></pre>
 <pre><code>## Rows: 418 Columns: 2
 ## -- Column specification --------------------------------------------------------
 ## Delimiter: &quot;,&quot;
@@ -134,44 +134,47 @@ summary(model)</code></pre>
 <div id="a-higher-value-means-more-importance-for-that-variable.-with-this-information-we-can-see-that-the-order-of-how-important-each-variable-is-sex-pclass-age-and-sibsp.-embarked-could-be-included-but-is-not-likly-to-add-much-value-especially-since-if-we-obserbe-the-p-values-above-they-are-both-above-0.1-which-mains-most-scientists-would-consider-them-not-significant.-additionally-parch-and-fare-can-be-completly-excluded-as-their-values-are-much-lower-than-the-good-predictors-such-as-pclass." class="section level3">
 <h3>A higher value means more importance for that variable. With this information, we can see that the order of how important each variable is Sex, Pclass, Age, and SibSp. Embarked could be included but is not likly to add much value (Especially, since if we obserbe the p-values above they are both above 0.1 which mains most scientists would consider them not significant). Additionally, Parch and Fare can be completly excluded as their values are much lower than the good predictors such as Pclass.</h3>
 </div>
+<div id="it-is-important-to-note-that-since-not-all-passengers-have-age-data-we-can-not-include-this-important-variable-in-those-model.-having-that-data-point-would-cause-there-to-be-nas-for-some-of-the-passangers-who-do-not-have-thar-variable." class="section level3">
+<h3>It is important to note that since not all passengers have age data we can not include this important variable in those model. Having that data point would cause there to be NA’s for some of the passangers who do not have thar variable.</h3>
+</div>
 </div>
 <div id="building-a-logistic-model-with-all-variables-determined-to-be-important" class="section level1">
 <h1>Building a logistic model with all variables determined to be important</h1>
-<pre class="r"><code>model &lt;- glm(formula = Survived~Pclass+Sex+SibSp+Age, data = train, family = &#39;binomial&#39;)
+<pre class="r"><code>model &lt;- glm(formula = Survived~Pclass+Sex+SibSp, data = train, family = &#39;binomial&#39;)
 summary(model)</code></pre>
 <pre><code>## 
 ## Call:
-## glm(formula = Survived ~ Pclass + Sex + SibSp + Age, family = &quot;binomial&quot;, 
+## glm(formula = Survived ~ Pclass + Sex + SibSp, family = &quot;binomial&quot;, 
 ##     data = train)
 ## 
 ## Deviance Residuals: 
 ##     Min       1Q   Median       3Q      Max  
-## -2.7714  -0.6445  -0.3836   0.6276   2.4585  
+## -2.2689  -0.6735  -0.4747   0.6189   2.5148  
 ## 
 ## Coefficients:
-##              Estimate Std. Error z value Pr(&gt;|z|)    
-## (Intercept)  5.600846   0.543441  10.306  &lt; 2e-16 ***
-## Pclass      -1.317398   0.140900  -9.350  &lt; 2e-16 ***
-## Sexmale     -2.623483   0.214524 -12.229  &lt; 2e-16 ***
-## SibSp       -0.376119   0.121080  -3.106  0.00189 ** 
-## Age         -0.044385   0.008155  -5.442 5.26e-08 ***
+##             Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)  3.43357    0.30543  11.242  &lt; 2e-16 ***
+## Pclass      -0.93896    0.10647  -8.819  &lt; 2e-16 ***
+## Sexmale     -2.74314    0.19027 -14.417  &lt; 2e-16 ***
+## SibSp       -0.24812    0.09453  -2.625  0.00867 ** 
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
 ## (Dispersion parameter for binomial family taken to be 1)
 ## 
-##     Null deviance: 964.52  on 713  degrees of freedom
-## Residual deviance: 636.72  on 709  degrees of freedom
-##   (177 observations deleted due to missingness)
-## AIC: 646.72
+##     Null deviance: 1186.66  on 890  degrees of freedom
+## Residual deviance:  819.32  on 887  degrees of freedom
+## AIC: 827.32
 ## 
-## Number of Fisher Scoring iterations: 5</code></pre>
+## Number of Fisher Scoring iterations: 4</code></pre>
 <div id="once-again-we-can-obserbe-the-p-values-being-signficant-for-the-variables-we-selected.-we-can-see-that-this-model-is-a-better-predictor-than-a-model-with-all-the-variables-since-the-aic-is-lower-for-the-new-model." class="section level3">
 <h3>Once again, we can obserbe the p-values being signficant for the variables we selected. We can see that this model is a better predictor than a model with all the variables since the AIC is lower for the new model.</h3>
 </div>
 </div>
 <div id="applying-the-model-to-the-test-data-set-to-predict-survivors" class="section level1">
 <h1>Applying the model to the test data set to predict survivors</h1>
+<div id="the-data-may-not-display-properly-due-to-the-long-names-of-the-passengners-however-the-output-is-a-dataframe-with-dimensions-418-x-3." class="section level4">
+<h4>The data may not display properly due to the long names of the passengners, however, the output is a dataframe with dimensions 418 x 3.</h4>
 <pre class="r"><code>predictions &lt;- predict(model, test, type = &quot;response&quot;)
 output &lt;- data.frame(test$PassengerId, test$Name, Survived = predictions )
 output</code></pre>
@@ -594,425 +597,426 @@ output</code></pre>
 ## 416             1307
 ## 417             1308
 ## 418             1309
-##                                                           test.Name    Survived
-## 1                                                  Kelly, Mr. James 0.075431383
-## 2                                  Wilkes, Mrs. James (Ellen Needs) 0.307134869
-## 3                                         Myles, Mr. Thomas Francis 0.082467392
-## 4                                                  Wirz, Mr. Albert 0.102181382
-## 5                      Hirvonen, Mrs. Alexander (Helga E Lindqvist) 0.573481326
-## 6                                        Svensson, Mr. Johan Cervin 0.168510948
-## 7                                              Connolly, Miss. Kate 0.578619957
-## 8                                      Caldwell, Mr. Albert Francis 0.233696518
-## 9                         Abrahim, Mrs. Joseph (Sophie Halaut Easu) 0.700509914
-## 10                                          Davies, Mr. John Samuel 0.065427370
-## 11                                                 Ilieff, Mr. Ylio          NA
-## 12                                       Jones, Mr. Charles Cresson 0.405709279
-## 13                    Snyder, Mrs. John Pillsbury (Nelle Stevenson) 0.947174069
-## 14                                             Howard, Mr. Benjamin 0.055735500
-## 15          Chaffee, Mrs. Herbert Fuller (Carrie Constance Toogood) 0.860715783
-## 16                    del Carlo, Mrs. Sebastiano (Argenia Genovesi) 0.821229229
-## 17                                                Keane, Mr. Daniel 0.229542177
-## 18                                                Assaf, Mr. Gerios 0.129328357
-## 19                                     Ilmakangas, Miss. Ida Livija 0.518527937
-## 20                            Assaf Khalil, Mrs. Mariana (Miriam&quot;)&quot; 0.413707446
-## 21                                           Rothschild, Mr. Martin 0.239155817
-## 22                                        Olsen, Master. Artur Karl 0.201926991
-## 23                             Flegenheim, Mrs. Alfred (Antoinette)          NA
-## 24                                  Williams, Mr. Richard Norris II 0.674341163
-## 25                  Ryerson, Mrs. Arthur Larned (Emily Maria Borie) 0.855309087
-## 26                                          Robins, Mr. Alexander A 0.027379859
-## 27                                     Ostby, Miss. Helene Ragnhild 0.964667647
-## 28                                                Daher, Mr. Shedid 0.122014799
-## 29                                          Brady, Mr. John Bertram 0.460132745
-## 30                                                Samaan, Mr. Elias          NA
-## 31                                     Louch, Mr. Charles Alexander 0.095109261
-## 32                                    Jefferys, Mr. Clifford Thomas 0.186198270
-## 33                         Dean, Mrs. Bertram (Eva Georgetta Light) 0.452106654
-## 34                Johnston, Mrs. Andrew G (Elizabeth Lily&quot; Watson)&quot;          NA
-## 35                                         Mock, Mr. Philipp Edmund 0.488078343
-## 36                 Katavelas, Mr. Vassilios (Catavelas Vassilios&quot;)&quot; 0.142344958
-## 37                                              Roth, Miss. Sarah A          NA
-## 38                                               Cacic, Miss. Manda 0.671851942
-## 39                                                  Sap, Mr. Julius 0.110617494
-## 40                                                    Hee, Mr. Ling          NA
-## 41                                                 Karun, Mr. Franz 0.062629921
-## 42                                      Franklin, Mr. Thomas Parham          NA
-## 43                                            Goldsmith, Mr. Nathan 0.057616439
-## 44                            Corbett, Mrs. Walter H (Irene Colvin) 0.836786368
-## 45                 Kimball, Mrs. Edwin Nelson Jr (Gertrude Parsons) 0.871021079
-## 46                                  Peltomaki, Mr. Nikolai Johannes 0.110617494
-## 47                                         Chevre, Mr. Paul Romaine 0.416454046
-## 48                                         Shaughnessy, Mr. Patrick          NA
-## 49                  Bucknell, Mrs. William Robert (Emma Eliza Ward) 0.834845569
-## 50                   Coutts, Mrs. William (Winnie Minnie&quot; Treanor)&quot; 0.512697898
-## 51                                         Smith, Mr. Lucien Philip 0.554436513
-## 52                                               Pulbaum, Mr. Franz 0.298213306
-## 53                                    Hocking, Miss. Ellen Nellie&quot;&quot; 0.790197709
-## 54                                       Fortune, Miss. Ethel Flora 0.871279435
-## 55                                Mangiavacchi, Mr. Serafino Emilio          NA
-## 56                                             Rice, Master. Albert 0.051020716
-## 57                                                  Cor, Mr. Bartol 0.073898164
-## 58                                    Abelseth, Mr. Olaus Jorgensen 0.110617494
-## 59                                        Davison, Mr. Thomas Henry          NA
-## 60                                      Chaudanson, Miss. Victorine 0.936171489
-## 61                                                  Dika, Mr. Mirko 0.150667987
-## 62                                        McCrae, Mr. Arthur Gordon 0.253933180
-## 63                                     Bjorklund, Mr. Ernst Herbert 0.145075827
-## 64                                     Bradley, Miss. Bridget Delia 0.661993002
-## 65                                      Ryerson, Master. John Borie 0.581935808
-## 66              Corey, Mrs. Percy C (Mary Phyllis Elizabeth Miller)          NA
-## 67                                          Burns, Miss. Mary Delia 0.700509914
-## 68                                   Moore, Mr. Clarence Bloomfield 0.395054058
-## 69                                  Tucker, Mr. Gilbert Milligan Jr 0.570536107
-## 70                              Fortune, Mrs. Mark (Mary McDougald) 0.776302334
-## 71                                        Mulvihill, Miss. Bertha E 0.641853732
-## 72                                               Minkoff, Mr. Lazar 0.129328357
-## 73                                   Nieminen, Miss. Manta Josefina 0.589402392
-## 74                                  Ovies y Rodriguez, Mr. Servando 0.597485898
-## 75                                             Geiger, Miss. Amalie 0.938772883
-## 76                                               Keeping, Mr. Edwin 0.554152198
-## 77                                                 Miles, Mr. Frank          NA
-## 78             Cornell, Mrs. Robert Clifford (Malvina Helen Lamson) 0.748391321
-## 79                                   Aldworth, Mr. Charles Augustus 0.271114661
-## 80                                           Doyle, Miss. Elizabeth 0.641853732
-## 81                                             Boulos, Master. Akar 0.165583244
-## 82                                               Straus, Mr. Isidor 0.155785079
-## 83                                           Case, Mr. Howard Brown 0.374048856
-## 84                                             Demetri, Mr. Marinko          NA
-## 85                                            Lamb, Mr. John Joseph          NA
-## 86                                               Khalil, Mr. Betros          NA
-## 87                                               Barry, Miss. Julia 0.610702205
-## 88                                       Badman, Miss. Emily Louisa 0.700509914
-## 89                                          O&#39;Donoghue, Ms. Bridget          NA
-## 90                                      Wells, Master. Ralph Lester 0.469457569
-## 91      Dyker, Mrs. Adolf Fredrik (Anna Elisabeth Judith Andersson) 0.573481326
-## 92                                               Pedersen, Mr. Olaf          NA
-## 93                             Davidson, Mrs. Thornton (Orian Hays) 0.937552226
-## 94                                                Guest, Mr. Robert          NA
-## 95                                              Birnbaum, Mr. Jakob 0.634216098
-## 96                                       Tenglin, Mr. Gunnar Isidor 0.110617494
-## 97           Cavendish, Mrs. Tyrell William (Julia Florence Siegel) 0.630436844
-## 98                                        Makinen, Mr. Kalle Edvard 0.094320410
-## 99                                     Braf, Miss. Elin Ester Maria 0.681561645
-## 100                                    Nancarrow, Mr. William Henry 0.080207815
-## 101             Stengel, Mrs. Charles Emil Henry (Annie May Morris) 0.880669620
-## 102                                              Weisz, Mr. Leopold 0.225842123
-## 103                                              Foley, Mr. William          NA
-## 104                          Johansson Palmquist, Mr. Oskar Leander 0.106325747
-## 105                       Thomas, Mrs. Alexander (Thamine Thelma&quot;)&quot; 0.637002458
-## 106                                       Holthen, Mr. Johan Martin 0.098180809
-## 107                                             Buckley, Mr. Daniel 0.129328357
-## 108                                                Ryan, Mr. Edward          NA
-## 109                                Willer, Mr. Aaron (Abi Weller&quot;)&quot;          NA
-## 110                                               Swane, Mr. George 0.382594464
-## 111                                        Stanton, Mr. Samuel Ward 0.185849754
-## 112                                      Shine, Miss. Ellen Natalia          NA
-## 113                                        Evans, Miss. Edith Corse 0.936171489
-## 114                                        Buckley, Miss. Katherine 0.695833435
-## 115                          Straus, Mrs. Isidor (Rosalie Ida Blun) 0.752332731
-## 116                                     Chronopoulos, Mr. Demetrios 0.104342868
-## 117                                                Thomas, Mr. John          NA
-## 118                                 Sandstrom, Miss. Beatrice Irene 0.773494272
-## 119                                            Beattie, Mr. Thomson 0.515523825
-## 120                 Chapman, Mrs. John Henry (Sara Elizabeth Lawry) 0.786301536
-## 121                                            Watt, Miss. Bertha J 0.919341505
-## 122                                               Kiernan, Mr. John          NA
-## 123                                 Schabert, Mrs. Paul (Emma Mock) 0.913240888
-## 124                                         Carver, Mr. Alfred John 0.098180809
-## 125                                               Kennedy, Mr. John          NA
-## 126                                        Cribb, Miss. Laura Alice 0.709737997
-## 127                                        Brobeck, Mr. Karl Rudolf 0.124412215
-## 128                                             McCoy, Miss. Alicia          NA
-## 129                                            Bowenur, Mr. Solomon 0.179227348
-## 130                                            Petersen, Mr. Marius 0.115060169
-## 131                                         Spinner, Mr. Henry John 0.083543887
-## 132                                       Gracie, Col. Archibald IV 0.333493899
-## 133                                   Lefebre, Mrs. Frank (Frances)          NA
-## 134                                           Thomas, Mr. Charles P          NA
-## 135                                          Dintcheff, Mr. Valtcho 0.052981599
-## 136                                       Carlsson, Mr. Carl Robert 0.115060169
-## 137                                       Zakarian, Mr. Mapriededer 0.104235366
-## 138                                             Schmidt, Mr. August 0.307584625
-## 139                                           Drapkin, Miss. Jennie 0.651991286
-## 140                                  Goodwin, Mr. Charles Frederick 0.042033781
-## 141                                     Goodwin, Miss. Jessie Allis 0.337201363
-## 142                                            Daniels, Miss. Sarah 0.943680818
-## 143                                      Ryerson, Mr. Arthur Larned 0.194094471
-## 144                                      Beauchamp, Mr. Henry James 0.289008333
-## 145           Lindeberg-Lind, Mr. Erik Gustaf (Mr Edward Lingrey&quot;)&quot; 0.449128392
-## 146                                       Vander Planke, Mr. Julius 0.029912353
-## 147                                     Hilliard, Mr. Herbert Henry          NA
-## 148                                                Davies, Mr. Evan 0.124412215
-## 149                                       Crafton, Mr. John Bertram          NA
-## 150                                          Lahtinen, Rev. William 0.203413680
-## 151                           Earnshaw, Mrs. Boulton (Olive Potter) 0.963123241
-## 152                                            Matinoff, Mr. Nicola          NA
-## 153                                              Storey, Mr. Thomas 0.025084365
-## 154                  Klasen, Mrs. (Hulda Kristina Eugenia Lofqvist) 0.512697898
-## 155                                    Asplund, Master. Filip Oscar 0.044945861
-## 156                                            Duquemin, Mr. Joseph 0.115060169
-## 157                                               Bird, Miss. Ellen 0.952406314
-## 158                                        Lundin, Miss. Olga Elida 0.651991286
-## 159                                        Borebank, Mr. John James 0.449128392
-## 160                             Peacock, Mrs. Benjamin (Edith Nile) 0.621201138
-## 161                                              Smyth, Miss. Julia          NA
-## 162                                  Touma, Master. Georges Youssef 0.159541482
-## 163                                            Wright, Miss. Marion 0.859609170
-## 164                                              Pearce, Mr. Ernest          NA
-## 165                                   Peruschitz, Rev. Joseph Maria 0.185849754
-## 166                      Kink-Heilmann, Mrs. Anton (Luise Heilmann) 0.529597956
-## 167                                              Brandeis, Mr. Emil 0.384497624
-## 168                                         Ford, Mr. Edward Watson 0.074055838
-## 169     Cassebeer, Mrs. Henry Arthur Jr (Eleanor Genevieve Fosdick)          NA
-## 170                                    Hellstrom, Miss. Hilda Maria 0.661993002
-## 171                                              Lithman, Mr. Simon          NA
-## 172                                             Zakarian, Mr. Ortin 0.102181382
-## 173                                        Dyker, Mr. Adolf Fredrik 0.085348604
-## 174                                                Torfa, Mr. Assad          NA
-## 175                      Asplund, Mr. Carl Oscar Vilhelm Gustafsson 0.042033781
-## 176                                       Brown, Miss. Edith Eileen 0.908900177
-## 177                                            Sincock, Miss. Maude 0.888781618
-## 178                                 Stengel, Mr. Charles Emil Henry 0.247325313
-## 179                Becker, Mrs. Allen Oliver (Nellie E Baumgardner) 0.797089279
-## 180           Compton, Mrs. Alexander Taylor (Mary Eliza Ingersoll) 0.808892040
-## 181                                       McCrie, Mr. James Matthew 0.271114661
-## 182                                Compton, Mr. Alexander Taylor Jr 0.411349696
-## 183  Marvin, Mrs. Daniel Warner (Mary Graham Carmichael Farquarson) 0.957238083
-## 184                                               Lane, Mr. Patrick          NA
-## 185            Douglas, Mrs. Frederick Charles (Mary Helene Baxter) 0.937552226
-## 186                                       Maybery, Mr. Frank Hubert 0.192659420
-## 187                            Phillips, Miss. Alice Frances Louisa 0.884317949
-## 188                                              Davies, Mr. Joseph 0.077157496
-## 189                                                 Sage, Miss. Ada          NA
-## 190                                                 Veal, Mr. James 0.192659420
-## 191                                            Angle, Mr. William A 0.176152901
-## 192                                          Salomon, Mr. Abraham L          NA
-## 193                               van Billiard, Master. Walter John 0.134542888
-## 194                                               Lingane, Mr. John 0.085888670
-## 195                                   Drew, Master. Marshall Brines 0.496872269
-## 196                               Karlsson, Mr. Julius Konrad Eugen 0.080207815
-## 197                                 Spedden, Master. Robert Douglas 0.801175327
-## 198                                     Nilsson, Miss. Berta Olivia 0.700509914
-## 199                                  Baimbrigge, Mr. Charles Robert 0.336644926
-## 200                         Rasmussen, Mrs. (Lena Jacobsen Solvang)          NA
-## 201                                              Murphy, Miss. Nora          NA
-## 202                         Danbom, Master. Gilbert Sigvard Emanuel 0.271015098
-## 203                                          Astor, Col. John Jacob 0.309547494
-## 204                                      Quick, Miss. Winifred Vera 0.903335970
-## 205                                        Andrew, Mr. Frank Thomas 0.317117364
-## 206                                       Omont, Mr. Alfred Fernand          NA
-## 207                                        McGowan, Miss. Katherine 0.523778853
-## 208                                    Collett, Mr. Sidney C Stuart 0.326806101
-## 209                                   Rosenbaum, Miss. Edith Louise 0.943680818
-## 210                                              Delalic, Mr. Redjo 0.110617494
-## 211                                     Andersen, Mr. Albert Karvin 0.083543887
-## 212                                               Finoli, Mr. Luigi          NA
-## 213                                       Deacon, Mr. Percy William 0.398439024
-## 214                    Howard, Mrs. Benjamin (Ellen Truelove Arman) 0.481720282
-## 215                          Andersson, Miss. Ida Augusta Margareta 0.176180337
-## 216                                           Head, Mr. Christopher 0.449128392
-## 217                                      Mahon, Miss. Bridget Delia          NA
-## 218                                        Wick, Mr. George Dennick 0.223378978
-## 219                    Widener, Mrs. George Dunton (Eleanor Elkins) 0.843973294
-## 220                                 Thomson, Mr. Alexander Morrison          NA
-## 221                                  Duran y More, Miss. Florentina 0.778748775
-## 222                                          Reynolds, Mr. Harold J 0.129328357
-## 223                                      Cook, Mrs. (Selena Rogers) 0.879699382
-## 224                                   Karlsson, Mr. Einar Gervasius 0.129328357
-## 225                Candee, Mrs. Edward (Helen Churchill Hungerford) 0.873366557
-## 226                Moubarek, Mrs. George (Omine Amenia&quot; Alexander)&quot;          NA
-## 227                                      Asplund, Mr. Johan Charles 0.119657267
-## 228                                          McNeill, Miss. Bridget          NA
-## 229                                       Everett, Mr. Thomas James 0.058833309
-## 230                              Hocking, Mr. Samuel James Metcalfe 0.221786996
-## 231                                     Sweet, Mr. George Frederick 0.430743260
-## 232                                        Willard, Miss. Constance 0.966149646
-## 233                                         Wiklund, Mr. Karl Johan 0.092538237
-## 234                                            Linehan, Mr. Michael          NA
-## 235                                       Cumings, Mr. John Bradley 0.390036686
-## 236                                          Vendel, Mr. Olof Edvin 0.134408940
-## 237                                        Warren, Mr. Frank Manley 0.174109809
-## 238                                             Baccos, Mr. Raffull 0.134408940
-## 239                                           Hiltunen, Miss. Marta 0.857050587
-## 240                     Douglas, Mrs. Walter Donald (Mahala Dutton) 0.855309087
-## 241                       Lindstrom, Mrs. Carl Johan (Sigrid Posse) 0.863219234
-## 242                                   Christy, Mrs. (Alice Frances) 0.724867935
-## 243                                    Spedden, Mr. Frederic Oakley 0.328833380
-## 244                                              Hyman, Mr. Abraham          NA
-## 245                       Johnston, Master. William Arthur Willie&quot;&quot;          NA
-## 246                                         Kenyon, Mr. Frederick R 0.369135475
-## 247                           Karnes, Mrs. J Frank (Claire Bennett) 0.879699382
-## 248                                          Drew, Mr. James Vivian 0.130367852
-## 249                        Hold, Mrs. Stephen (Annie Margaret Hill) 0.786301536
-## 250                       Khalil, Mrs. Betros (Zahie Maria&quot; Elias)&quot;          NA
-## 251                                           West, Miss. Barbara J 0.927512820
-## 252                        Abrahamsson, Mr. Abraham August Johannes 0.134408940
-## 253                                        Clark, Mr. Walter Miller 0.521351619
-## 254                                        Salander, Mr. Karl Johan 0.115060169
-## 255                                             Wenzel, Mr. Linhart 0.081860373
-## 256                                      MacKay, Mr. George William          NA
-## 257                                                 Mahon, Mr. John          NA
-## 258                                           Niklasson, Mr. Samuel 0.098180809
-## 259                                         Bentham, Miss. Lilian W 0.893093875
-## 260                                        Midtsjo, Mr. Karl Albert 0.129328357
-## 261                            de Messemaeker, Mr. Guillaume Joseph 0.048753677
-## 262                                   Nilsson, Mr. August Ferdinand 0.129328357
-## 263               Wells, Mrs. Arthur Henry (Addie&quot; Dart Trevaskis)&quot; 0.842757962
-## 264                                    Klasen, Miss. Gertrud Emilia 0.773494272
-## 265                          Portaluppi, Mr. Emilio Ilario Giuseppe 0.271114661
-## 266                                           Lyntakoff, Mr. Stanko          NA
-## 267                           Chisholm, Mr. Roderick Robert Crispin          NA
-## 268                                     Warren, Mr. Charles William          NA
-## 269                                     Howard, Miss. May Elizabeth          NA
-## 270                                               Pokrnic, Mr. Mate 0.150667987
-## 271                                    McCaffry, Mr. Thomas Francis 0.405709279
-## 272                                                Fox, Mr. Patrick          NA
-## 273                   Clark, Mrs. Walter Miller (Virginia McDowell) 0.940100948
-## 274                                              Lennon, Miss. Mary          NA
-## 275                                           Saade, Mr. Jean Nassr          NA
-## 276                              Bryhl, Miss. Dagmar Jenny Ingeborg 0.845826638
-## 277                                    Parker, Mr. Clifford Richard 0.289008333
-## 278                                           Faunthorpe, Mr. Harry 0.140766187
-## 279                                            Ware, Mr. John James 0.203413680
-## 280                                       Oxenham, Mr. Percy Thomas 0.346627440
-## 281                                          Oreskovic, Miss. Jelka 0.651991286
-## 282                                  Peacock, Master. Alfred Edward 0.200329024
-## 283                                           Fleming, Miss. Honora          NA
-## 284                                      Touma, Miss. Maria Youssef 0.705384180
-## 285                                     Rosblom, Miss. Salli Helena 0.765623784
-## 286                                             Dennis, Mr. William 0.070917460
-## 287                          Franklin, Mr. Charles (Charles Fardon)          NA
-## 288                                      Snyder, Mr. John Pillsbury 0.554436513
-## 289                                         Mardirosian, Mr. Sarkis          NA
-## 290                                                Ford, Mr. Arthur          NA
-## 291                             Rheims, Mr. George Alexander Lucien          NA
-## 292                          Daly, Miss. Margaret Marcella Maggie&quot;&quot; 0.578619957
-## 293                                               Nasr, Mr. Mustafa          NA
-## 294                                           Dodge, Dr. Washington 0.255680096
-## 295                                       Wittevrongel, Mr. Camille 0.070917460
-## 296                                            Angheloff, Mr. Minko 0.106325747
-## 297                                           Laroche, Miss. Louise 0.927273729
-## 298                                               Samaan, Mr. Hanna          NA
-## 299                                      Loring, Mr. Joseph Holland 0.581375739
-## 300                                             Johansson, Mr. Nils 0.094320410
-## 301                                       Olsson, Mr. Oscar Wilhelm 0.083543887
-## 302                                             Malachard, Mr. Noel          NA
-## 303                                     Phillips, Mr. Escott Robert 0.172790836
-## 304                                               Pokrnic, Mr. Tome 0.115060169
-## 305                               McCarthy, Miss. Catherine Katie&quot;&quot;          NA
-## 306      Crosby, Mrs. Edward Gifford (Catherine Elizabeth Halstead) 0.743970325
-## 307                            Allison, Mr. Hudson Joshua Creighton 0.488078343
-## 308                                       Aks, Master. Philip Frank 0.266652991
-## 309                                      Hays, Mr. Charles Melville 0.239155817
-## 310                      Hansen, Mrs. Claus Peter (Jennie L Howard) 0.326341486
-## 311                                            Cacic, Mr. Jego Grga 0.145075827
-## 312                                            Vartanian, Mr. David 0.124412215
-## 313                                             Sadowitz, Mr. Harry          NA
-## 314                                             Carr, Miss. Jeannie 0.501604447
-## 315                           White, Mrs. John Stuart (Ella Holmes) 0.863219234
-## 316                                            Hagardon, Miss. Kate 0.709737997
-## 317                                   Spencer, Mr. William Augustus 0.223378978
-## 318                                      Rogers, Mr. Reginald Harry 0.377366114
-## 319                                       Jonsson, Mr. Nils Hilding 0.102181382
-## 320                                    Jefferys, Mr. Ernest Wilfred 0.200025454
-## 321                                     Andersson, Mr. Johan Samuel 0.106325747
-## 322                                           Krekorian, Mr. Neshan 0.110617494
-## 323                                              Nesson, Mr. Israel 0.307584625
-## 324                                              Rowe, Mr. Alfred G 0.548662816
-## 325                                          Kreuchen, Miss. Emilie 0.927737572
-## 326                                                  Assam, Mr. Ali 0.119657267
-## 327                                    Becker, Miss. Ruth Elizabeth 0.843062731
-## 328                     Rosenshine, Mr. George (Mr George Thorne&quot;)&quot; 0.405709279
-## 329                                   Clarke, Mr. Charles Valentine 0.210700350
-## 330                                             Enander, Mr. Ingvar 0.356746774
-## 331           Davies, Mrs. John Morgan (Elizabeth Agnes Mary White) 0.697534372
-## 332                                    Dulles, Mr. William Crothers 0.482247752
-## 333                                             Thomas, Mr. Tannous          NA
-## 334                           Nakid, Mrs. Said (Waika Mary&quot; Mowad)&quot; 0.605688194
-## 335                                                   Cor, Mr. Ivan 0.102181382
-## 336                                        Maguire, Mr. John Edward 0.581375739
-## 337                                      de Brito, Mr. Jose Joaquim 0.253933180
-## 338                                               Elias, Mr. Joseph 0.062629921
-## 339                                            Denbury, Mr. Herbert 0.317117364
-## 340                                           Betros, Master. Seman          NA
-## 341                                   Fillbrook, Mr. Joseph Charles 0.387850130
-## 342                                      Lundstrom, Mr. Thure Edvin 0.083543887
-## 343                                           Sage, Mr. John George          NA
-## 344 Cardeza, Mrs. James Warburton Martinez (Charlotte Wardle Drake) 0.846724080
-## 345                             van Billiard, Master. James William          NA
-## 346                                     Abelseth, Miss. Karen Marie 0.718795880
-## 347                                      Botsford, Mr. William Hull 0.307584625
-## 348                 Whabee, Mrs. George Joseph (Shawneene Abi-Saab) 0.490509416
-## 349                                                Giles, Mr. Ralph 0.326806101
-## 350                                          Walcroft, Miss. Nellie 0.830633567
-## 351                    Greenfield, Mrs. Leo David (Blanche Strouse) 0.907722331
-## 352                                       Stokes, Mr. Philip Joseph 0.317117364
-## 353                                             Dibden, Mr. William 0.387850130
-## 354                                              Herman, Mr. Samuel 0.098998417
-## 355                         Dean, Miss. Elizabeth Gladys Millvina&quot;&quot; 0.779883455
-## 356                                        Julian, Mr. Henry Forbes 0.363716244
-## 357                  Brown, Mrs. John Murray (Caroline Lane Lamson) 0.713513953
-## 358                                             Lockyer, Mr. Edward          NA
-## 359                                            O&#39;Keefe, Mr. Patrick          NA
-## 360             Lindell, Mrs. Edvard Bengtsson (Elin Gerda Persson) 0.485252175
-## 361                                     Sage, Master. William Henry 0.009685784
-## 362                         Mallet, Mrs. Albert (Antoinette Magnin) 0.821229229
-## 363                    Ware, Mrs. John James (Florence Louise Long) 0.830633567
-## 364                                               Strilic, Mr. Ivan 0.102181382
-## 365                    Harder, Mrs. George Achilles (Dorothy Annan) 0.942552021
-## 366                                  Sage, Mrs. John (Annie Bullen)          NA
-## 367                                               Caram, Mr. Joseph          NA
-## 368                    Riihivouri, Miss. Susanna Juhantytar Sanni&quot;&quot; 0.661993002
-## 369                         Gibson, Mrs. Leonard (Pauline C Boeson) 0.907722331
-## 370                                   Pallas y Castello, Mr. Emilio 0.279974139
-## 371                                                Giles, Mr. Edgar 0.275752110
-## 372                                       Wilson, Miss. Helen Alice 0.948217037
-## 373                                         Ismay, Mr. Joseph Bruce 0.374048856
-## 374                                          Harbeck, Mr. William H 0.166538573
-## 375                           Dodge, Mrs. Washington (Ruth Vidaver) 0.819143420
-## 376                                        Bowen, Miss. Grace Scott 0.907722331
-## 377                                               Kink, Miss. Maria 0.479998195
-## 378                                    Cotterill, Mr. Henry Harry&quot;&quot; 0.356746774
-## 379                                     Hipkins, Mr. William Edward 0.314062581
-## 380                                     Asplund, Master. Carl Edgar 0.062900715
-## 381                                           O&#39;Connor, Mr. Patrick          NA
-## 382                                               Foley, Mr. Joseph 0.106325747
-## 383                                      Risien, Mrs. Samuel (Emma)          NA
-## 384                             McNamee, Mrs. Neal (Eileen O&#39;Leary) 0.605688194
-## 385                                  Wheeler, Mr. Edwin Frederick&quot;&quot;          NA
-## 386                                              Herman, Miss. Kate 0.821229229
-## 387                                  Aronsson, Mr. Ernst Axel Algot 0.115060169
-## 388                                                 Ashby, Mr. John 0.100891174
-## 389                                            Canavan, Mr. Patrick 0.129328357
-## 390                                     Palsson, Master. Paul Folke 0.085528453
-## 391                                      Payne, Mr. Vivian Ponsonby 0.654553701
-## 392                  Lines, Mrs. Ernest H (Elizabeth Lindsey James) 0.882863235
-## 393                                   Abbott, Master. Eugene Joseph 0.174821727
-## 394                                            Gilbert, Mr. William 0.148867067
-## 395                                        Kink-Heilmann, Mr. Anton 0.032598559
-## 396                  Smith, Mrs. Lucien Philip (Mary Eloise Hughes) 0.957238083
-## 397                                            Colbert, Mr. Patrick 0.115060169
-## 398 Frolicher-Stehli, Mrs. Maxmillian (Margaretha Emerentia Stehli) 0.855309087
-## 399                                  Larsson-Rondberg, Mr. Edvard A 0.124412215
-## 400                                        Conlon, Mr. Thomas Henry 0.087005590
-## 401                                         Bonnell, Miss. Caroline 0.950353538
-## 402                                                 Gale, Mr. Harry 0.151849088
-## 403                                  Gibson, Miss. Dorothy Winifred 0.964667647
-## 404                                          Carrau, Mr. Jose Pedro 0.712062995
-## 405                                    Frauenthal, Mr. Isaac Gerald 0.348713985
-## 406                    Nourney, Mr. Alfred (Baron von Drachstedt&quot;)&quot; 0.366995592
-## 407                                       Ware, Mr. William Jeffery 0.258380918
-## 408                                      Widener, Mr. George Dunton 0.281832528
-## 409                                 Riordan, Miss. Johanna Hannah&quot;&quot;          NA
-## 410                                       Peacock, Miss. Treasteall 0.757565534
-## 411                                          Naughton, Miss. Hannah          NA
-## 412                 Minahan, Mrs. William Edward (Lillian E Thorpe) 0.905944655
-## 413                                  Henriksson, Miss. Jenny Lovisa 0.600099607
-## 414                                              Spector, Mr. Woolf          NA
-## 415                                    Oliva y Ocana, Dona. Fermina 0.927737572
-## 416                                    Saether, Mr. Simon Sivertsen 0.063945492
-## 417                                             Ware, Mr. Frederick          NA
-## 418                                        Peter, Master. Michael J          NA</code></pre>
+##                                                           test.Name   Survived
+## 1                                                  Kelly, Mr. James 0.10655287
+## 2                                  Wilkes, Mrs. James (Ellen Needs) 0.59111294
+## 3                                         Myles, Mr. Thomas Francis 0.23370898
+## 4                                                  Wirz, Mr. Albert 0.10655287
+## 5                      Hirvonen, Mrs. Alexander (Helga E Lindqvist) 0.59111294
+## 6                                        Svensson, Mr. Johan Cervin 0.10655287
+## 7                                              Connolly, Miss. Kate 0.64946522
+## 8                                      Caldwell, Mr. Albert Francis 0.19222661
+## 9                         Abrahim, Mrs. Joseph (Sophie Halaut Easu) 0.64946522
+## 10                                          Davies, Mr. John Samuel 0.06769243
+## 11                                                 Ilieff, Mr. Ylio 0.10655287
+## 12                                       Jones, Mr. Charles Cresson 0.43818663
+## 13                    Snyder, Mrs. John Pillsbury (Nelle Stevenson) 0.90434727
+## 14                                             Howard, Mr. Benjamin 0.19222661
+## 15          Chaffee, Mrs. Herbert Fuller (Carrie Constance Toogood) 0.90434727
+## 16                    del Carlo, Mrs. Sebastiano (Argenia Genovesi) 0.78709932
+## 17                                                Keane, Mr. Daniel 0.23370898
+## 18                                                Assaf, Mr. Gerios 0.10655287
+## 19                                     Ilmakangas, Miss. Ida Livija 0.59111294
+## 20                            Assaf Khalil, Mrs. Mariana (Miriam&quot;)&quot; 0.64946522
+## 21                                           Rothschild, Mr. Martin 0.37832918
+## 22                                        Olsen, Master. Artur Karl 0.10655287
+## 23                             Flegenheim, Mrs. Alfred (Antoinette) 0.92376313
+## 24                                  Williams, Mr. Richard Norris II 0.43818663
+## 25                  Ryerson, Mrs. Arthur Larned (Emily Maria Borie) 0.90434727
+## 26                                          Robins, Mr. Alexander A 0.08513275
+## 27                                     Ostby, Miss. Helene Ragnhild 0.92376313
+## 28                                                Daher, Mr. Shedid 0.10655287
+## 29                                          Brady, Mr. John Bertram 0.43818663
+## 30                                                Samaan, Mr. Elias 0.06769243
+## 31                                     Louch, Mr. Charles Alexander 0.19222661
+## 32                                    Jefferys, Mr. Clifford Thomas 0.15660247
+## 33                         Dean, Mrs. Bertram (Eva Georgetta Light) 0.59111294
+## 34                Johnston, Mrs. Andrew G (Elizabeth Lily&quot; Watson)&quot; 0.59111294
+## 35                                         Mock, Mr. Philipp Edmund 0.37832918
+## 36                 Katavelas, Mr. Vassilios (Catavelas Vassilios&quot;)&quot; 0.10655287
+## 37                                              Roth, Miss. Sarah A 0.64946522
+## 38                                               Cacic, Miss. Manda 0.64946522
+## 39                                                  Sap, Mr. Julius 0.10655287
+## 40                                                    Hee, Mr. Ling 0.10655287
+## 41                                                 Karun, Mr. Franz 0.10655287
+## 42                                      Franklin, Mr. Thomas Parham 0.43818663
+## 43                                            Goldsmith, Mr. Nathan 0.10655287
+## 44                            Corbett, Mrs. Walter H (Irene Colvin) 0.82572825
+## 45                 Kimball, Mrs. Edwin Nelson Jr (Gertrude Parsons) 0.90434727
+## 46                                  Peltomaki, Mr. Nikolai Johannes 0.10655287
+## 47                                         Chevre, Mr. Paul Romaine 0.43818663
+## 48                                         Shaughnessy, Mr. Patrick 0.10655287
+## 49                  Bucknell, Mrs. William Robert (Emma Eliza Ward) 0.92376313
+## 50                   Coutts, Mrs. William (Winnie Minnie&quot; Treanor)&quot; 0.64946522
+## 51                                         Smith, Mr. Lucien Philip 0.37832918
+## 52                                               Pulbaum, Mr. Franz 0.23370898
+## 53                                    Hocking, Miss. Ellen Nellie&quot;&quot; 0.74257728
+## 54                                       Fortune, Miss. Ethel Flora 0.85198391
+## 55                                Mangiavacchi, Mr. Serafino Emilio 0.23370898
+## 56                                             Rice, Master. Albert 0.04233309
+## 57                                                  Cor, Mr. Bartol 0.10655287
+## 58                                    Abelseth, Mr. Olaus Jorgensen 0.10655287
+## 59                                        Davison, Mr. Thomas Henry 0.08513275
+## 60                                      Chaudanson, Miss. Victorine 0.92376313
+## 61                                                  Dika, Mr. Mirko 0.10655287
+## 62                                        McCrae, Mr. Arthur Gordon 0.23370898
+## 63                                     Bjorklund, Mr. Ernst Herbert 0.10655287
+## 64                                     Bradley, Miss. Bridget Delia 0.64946522
+## 65                                      Ryerson, Master. John Borie 0.32196255
+## 66              Corey, Mrs. Percy C (Mary Phyllis Elizabeth Miller) 0.82572825
+## 67                                          Burns, Miss. Mary Delia 0.64946522
+## 68                                   Moore, Mr. Clarence Bloomfield 0.43818663
+## 69                                  Tucker, Mr. Gilbert Milligan Jr 0.43818663
+## 70                              Fortune, Mrs. Mark (Mary McDougald) 0.90434727
+## 71                                        Mulvihill, Miss. Bertha E 0.64946522
+## 72                                               Minkoff, Mr. Lazar 0.10655287
+## 73                                   Nieminen, Miss. Manta Josefina 0.64946522
+## 74                                  Ovies y Rodriguez, Mr. Servando 0.43818663
+## 75                                             Geiger, Miss. Amalie 0.92376313
+## 76                                               Keeping, Mr. Edwin 0.43818663
+## 77                                                 Miles, Mr. Frank 0.10655287
+## 78             Cornell, Mrs. Robert Clifford (Malvina Helen Lamson) 0.88062562
+## 79                                   Aldworth, Mr. Charles Augustus 0.23370898
+## 80                                           Doyle, Miss. Elizabeth 0.64946522
+## 81                                             Boulos, Master. Akar 0.08513275
+## 82                                               Straus, Mr. Isidor 0.37832918
+## 83                                           Case, Mr. Howard Brown 0.43818663
+## 84                                             Demetri, Mr. Marinko 0.10655287
+## 85                                            Lamb, Mr. John Joseph 0.23370898
+## 86                                               Khalil, Mr. Betros 0.08513275
+## 87                                               Barry, Miss. Julia 0.64946522
+## 88                                       Badman, Miss. Emily Louisa 0.64946522
+## 89                                          O&#39;Donoghue, Ms. Bridget 0.64946522
+## 90                                      Wells, Master. Ralph Lester 0.19222661
+## 91      Dyker, Mrs. Adolf Fredrik (Anna Elisabeth Judith Andersson) 0.59111294
+## 92                                               Pedersen, Mr. Olaf 0.10655287
+## 93                             Davidson, Mrs. Thornton (Orian Hays) 0.90434727
+## 94                                                Guest, Mr. Robert 0.10655287
+## 95                                              Birnbaum, Mr. Jakob 0.43818663
+## 96                                       Tenglin, Mr. Gunnar Isidor 0.10655287
+## 97           Cavendish, Mrs. Tyrell William (Julia Florence Siegel) 0.90434727
+## 98                                        Makinen, Mr. Kalle Edvard 0.10655287
+## 99                                     Braf, Miss. Elin Ester Maria 0.64946522
+## 100                                    Nancarrow, Mr. William Henry 0.10655287
+## 101             Stengel, Mrs. Charles Emil Henry (Annie May Morris) 0.90434727
+## 102                                              Weisz, Mr. Leopold 0.19222661
+## 103                                              Foley, Mr. William 0.10655287
+## 104                          Johansson Palmquist, Mr. Oskar Leander 0.10655287
+## 105                       Thomas, Mrs. Alexander (Thamine Thelma&quot;)&quot; 0.59111294
+## 106                                       Holthen, Mr. Johan Martin 0.10655287
+## 107                                             Buckley, Mr. Daniel 0.10655287
+## 108                                                Ryan, Mr. Edward 0.10655287
+## 109                                Willer, Mr. Aaron (Abi Weller&quot;)&quot; 0.10655287
+## 110                                               Swane, Mr. George 0.23370898
+## 111                                        Stanton, Mr. Samuel Ward 0.23370898
+## 112                                      Shine, Miss. Ellen Natalia 0.64946522
+## 113                                        Evans, Miss. Edith Corse 0.92376313
+## 114                                        Buckley, Miss. Katherine 0.64946522
+## 115                          Straus, Mrs. Isidor (Rosalie Ida Blun) 0.90434727
+## 116                                     Chronopoulos, Mr. Demetrios 0.08513275
+## 117                                                Thomas, Mr. John 0.10655287
+## 118                                 Sandstrom, Miss. Beatrice Irene 0.59111294
+## 119                                            Beattie, Mr. Thomson 0.43818663
+## 120                 Chapman, Mrs. John Henry (Sara Elizabeth Lawry) 0.78709932
+## 121                                            Watt, Miss. Bertha J 0.82572825
+## 122                                               Kiernan, Mr. John 0.08513275
+## 123                                 Schabert, Mrs. Paul (Emma Mock) 0.90434727
+## 124                                         Carver, Mr. Alfred John 0.10655287
+## 125                                               Kennedy, Mr. John 0.10655287
+## 126                                        Cribb, Miss. Laura Alice 0.64946522
+## 127                                        Brobeck, Mr. Karl Rudolf 0.10655287
+## 128                                             McCoy, Miss. Alicia 0.53007536
+## 129                                            Bowenur, Mr. Solomon 0.23370898
+## 130                                            Petersen, Mr. Marius 0.10655287
+## 131                                         Spinner, Mr. Henry John 0.10655287
+## 132                                       Gracie, Col. Archibald IV 0.43818663
+## 133                                   Lefebre, Mrs. Frank (Frances) 0.64946522
+## 134                                           Thomas, Mr. Charles P 0.08513275
+## 135                                          Dintcheff, Mr. Valtcho 0.10655287
+## 136                                       Carlsson, Mr. Carl Robert 0.10655287
+## 137                                       Zakarian, Mr. Mapriededer 0.10655287
+## 138                                             Schmidt, Mr. August 0.23370898
+## 139                                           Drapkin, Miss. Jennie 0.64946522
+## 140                                  Goodwin, Mr. Charles Frederick 0.08513275
+## 141                                     Goodwin, Miss. Jessie Allis 0.34889114
+## 142                                            Daniels, Miss. Sarah 0.92376313
+## 143                                      Ryerson, Mr. Arthur Larned 0.37832918
+## 144                                      Beauchamp, Mr. Henry James 0.23370898
+## 145           Lindeberg-Lind, Mr. Erik Gustaf (Mr Edward Lingrey&quot;)&quot; 0.43818663
+## 146                                       Vander Planke, Mr. Julius 0.05361555
+## 147                                     Hilliard, Mr. Herbert Henry 0.43818663
+## 148                                                Davies, Mr. Evan 0.10655287
+## 149                                       Crafton, Mr. John Bertram 0.43818663
+## 150                                          Lahtinen, Rev. William 0.19222661
+## 151                           Earnshaw, Mrs. Boulton (Olive Potter) 0.92376313
+## 152                                            Matinoff, Mr. Nicola 0.10655287
+## 153                                              Storey, Mr. Thomas 0.10655287
+## 154                  Klasen, Mrs. (Hulda Kristina Eugenia Lofqvist) 0.64946522
+## 155                                    Asplund, Master. Filip Oscar 0.04233309
+## 156                                            Duquemin, Mr. Joseph 0.10655287
+## 157                                               Bird, Miss. Ellen 0.92376313
+## 158                                        Lundin, Miss. Olga Elida 0.64946522
+## 159                                        Borebank, Mr. John James 0.43818663
+## 160                             Peacock, Mrs. Benjamin (Edith Nile) 0.64946522
+## 161                                              Smyth, Miss. Julia 0.64946522
+## 162                                  Touma, Master. Georges Youssef 0.08513275
+## 163                                            Wright, Miss. Marion 0.82572825
+## 164                                              Pearce, Mr. Ernest 0.10655287
+## 165                                   Peruschitz, Rev. Joseph Maria 0.23370898
+## 166                      Kink-Heilmann, Mrs. Anton (Luise Heilmann) 0.59111294
+## 167                                              Brandeis, Mr. Emil 0.43818663
+## 168                                         Ford, Mr. Edward Watson 0.06769243
+## 169     Cassebeer, Mrs. Henry Arthur Jr (Eleanor Genevieve Fosdick) 0.92376313
+## 170                                    Hellstrom, Miss. Hilda Maria 0.64946522
+## 171                                              Lithman, Mr. Simon 0.10655287
+## 172                                             Zakarian, Mr. Ortin 0.10655287
+## 173                                        Dyker, Mr. Adolf Fredrik 0.08513275
+## 174                                                Torfa, Mr. Assad 0.10655287
+## 175                      Asplund, Mr. Carl Oscar Vilhelm Gustafsson 0.08513275
+## 176                                       Brown, Miss. Edith Eileen 0.82572825
+## 177                                            Sincock, Miss. Maude 0.82572825
+## 178                                 Stengel, Mr. Charles Emil Henry 0.37832918
+## 179                Becker, Mrs. Allen Oliver (Nellie E Baumgardner) 0.82572825
+## 180           Compton, Mrs. Alexander Taylor (Mary Eliza Ingersoll) 0.92376313
+## 181                                       McCrie, Mr. James Matthew 0.23370898
+## 182                                Compton, Mr. Alexander Taylor Jr 0.37832918
+## 183  Marvin, Mrs. Daniel Warner (Mary Graham Carmichael Farquarson) 0.90434727
+## 184                                               Lane, Mr. Patrick 0.10655287
+## 185            Douglas, Mrs. Frederick Charles (Mary Helene Baxter) 0.90434727
+## 186                                       Maybery, Mr. Frank Hubert 0.23370898
+## 187                            Phillips, Miss. Alice Frances Louisa 0.82572825
+## 188                                              Davies, Mr. Joseph 0.06769243
+## 189                                                 Sage, Miss. Ada 0.20289778
+## 190                                                 Veal, Mr. James 0.23370898
+## 191                                            Angle, Mr. William A 0.19222661
+## 192                                          Salomon, Mr. Abraham L 0.43818663
+## 193                               van Billiard, Master. Walter John 0.08513275
+## 194                                               Lingane, Mr. John 0.23370898
+## 195                                   Drew, Master. Marshall Brines 0.23370898
+## 196                               Karlsson, Mr. Julius Konrad Eugen 0.10655287
+## 197                                 Spedden, Master. Robert Douglas 0.43818663
+## 198                                     Nilsson, Miss. Berta Olivia 0.64946522
+## 199                                  Baimbrigge, Mr. Charles Robert 0.23370898
+## 200                         Rasmussen, Mrs. (Lena Jacobsen Solvang) 0.64946522
+## 201                                              Murphy, Miss. Nora 0.64946522
+## 202                         Danbom, Master. Gilbert Sigvard Emanuel 0.10655287
+## 203                                          Astor, Col. John Jacob 0.37832918
+## 204                                      Quick, Miss. Winifred Vera 0.78709932
+## 205                                        Andrew, Mr. Frank Thomas 0.23370898
+## 206                                       Omont, Mr. Alfred Fernand 0.43818663
+## 207                                        McGowan, Miss. Katherine 0.64946522
+## 208                                    Collett, Mr. Sidney C Stuart 0.23370898
+## 209                                   Rosenbaum, Miss. Edith Louise 0.92376313
+## 210                                              Delalic, Mr. Redjo 0.10655287
+## 211                                     Andersen, Mr. Albert Karvin 0.10655287
+## 212                                               Finoli, Mr. Luigi 0.10655287
+## 213                                       Deacon, Mr. Percy William 0.23370898
+## 214                    Howard, Mrs. Benjamin (Ellen Truelove Arman) 0.78709932
+## 215                          Andersson, Miss. Ida Augusta Margareta 0.40714133
+## 216                                           Head, Mr. Christopher 0.43818663
+## 217                                      Mahon, Miss. Bridget Delia 0.64946522
+## 218                                        Wick, Mr. George Dennick 0.37832918
+## 219                    Widener, Mrs. George Dunton (Eleanor Elkins) 0.90434727
+## 220                                 Thomson, Mr. Alexander Morrison 0.10655287
+## 221                                  Duran y More, Miss. Florentina 0.78709932
+## 222                                          Reynolds, Mr. Harold J 0.10655287
+## 223                                      Cook, Mrs. (Selena Rogers) 0.82572825
+## 224                                   Karlsson, Mr. Einar Gervasius 0.10655287
+## 225                Candee, Mrs. Edward (Helen Churchill Hungerford) 0.92376313
+## 226                Moubarek, Mrs. George (Omine Amenia&quot; Alexander)&quot; 0.64946522
+## 227                                      Asplund, Mr. Johan Charles 0.10655287
+## 228                                          McNeill, Miss. Bridget 0.64946522
+## 229                                       Everett, Mr. Thomas James 0.10655287
+## 230                              Hocking, Mr. Samuel James Metcalfe 0.23370898
+## 231                                     Sweet, Mr. George Frederick 0.23370898
+## 232                                        Willard, Miss. Constance 0.92376313
+## 233                                         Wiklund, Mr. Karl Johan 0.08513275
+## 234                                            Linehan, Mr. Michael 0.10655287
+## 235                                       Cumings, Mr. John Bradley 0.37832918
+## 236                                          Vendel, Mr. Olof Edvin 0.10655287
+## 237                                        Warren, Mr. Frank Manley 0.37832918
+## 238                                             Baccos, Mr. Raffull 0.10655287
+## 239                                           Hiltunen, Miss. Marta 0.78709932
+## 240                     Douglas, Mrs. Walter Donald (Mahala Dutton) 0.90434727
+## 241                       Lindstrom, Mrs. Carl Johan (Sigrid Posse) 0.92376313
+## 242                                   Christy, Mrs. (Alice Frances) 0.82572825
+## 243                                    Spedden, Mr. Frederic Oakley 0.37832918
+## 244                                              Hyman, Mr. Abraham 0.10655287
+## 245                       Johnston, Master. William Arthur Willie&quot;&quot; 0.08513275
+## 246                                         Kenyon, Mr. Frederick R 0.37832918
+## 247                           Karnes, Mrs. J Frank (Claire Bennett) 0.82572825
+## 248                                          Drew, Mr. James Vivian 0.19222661
+## 249                        Hold, Mrs. Stephen (Annie Margaret Hill) 0.78709932
+## 250                       Khalil, Mrs. Betros (Zahie Maria&quot; Elias)&quot; 0.59111294
+## 251                                           West, Miss. Barbara J 0.78709932
+## 252                        Abrahamsson, Mr. Abraham August Johannes 0.10655287
+## 253                                        Clark, Mr. Walter Miller 0.37832918
+## 254                                        Salander, Mr. Karl Johan 0.10655287
+## 255                                             Wenzel, Mr. Linhart 0.10655287
+## 256                                      MacKay, Mr. George William 0.10655287
+## 257                                                 Mahon, Mr. John 0.10655287
+## 258                                           Niklasson, Mr. Samuel 0.10655287
+## 259                                         Bentham, Miss. Lilian W 0.82572825
+## 260                                        Midtsjo, Mr. Karl Albert 0.10655287
+## 261                            de Messemaeker, Mr. Guillaume Joseph 0.08513275
+## 262                                   Nilsson, Mr. August Ferdinand 0.10655287
+## 263               Wells, Mrs. Arthur Henry (Addie&quot; Dart Trevaskis)&quot; 0.82572825
+## 264                                    Klasen, Miss. Gertrud Emilia 0.59111294
+## 265                          Portaluppi, Mr. Emilio Ilario Giuseppe 0.23370898
+## 266                                           Lyntakoff, Mr. Stanko 0.10655287
+## 267                           Chisholm, Mr. Roderick Robert Crispin 0.43818663
+## 268                                     Warren, Mr. Charles William 0.10655287
+## 269                                     Howard, Miss. May Elizabeth 0.64946522
+## 270                                               Pokrnic, Mr. Mate 0.10655287
+## 271                                    McCaffry, Mr. Thomas Francis 0.43818663
+## 272                                                Fox, Mr. Patrick 0.10655287
+## 273                   Clark, Mrs. Walter Miller (Virginia McDowell) 0.90434727
+## 274                                              Lennon, Miss. Mary 0.59111294
+## 275                                           Saade, Mr. Jean Nassr 0.10655287
+## 276                              Bryhl, Miss. Dagmar Jenny Ingeborg 0.78709932
+## 277                                    Parker, Mr. Clifford Richard 0.23370898
+## 278                                           Faunthorpe, Mr. Harry 0.19222661
+## 279                                            Ware, Mr. John James 0.19222661
+## 280                                       Oxenham, Mr. Percy Thomas 0.23370898
+## 281                                          Oreskovic, Miss. Jelka 0.64946522
+## 282                                  Peacock, Master. Alfred Edward 0.08513275
+## 283                                           Fleming, Miss. Honora 0.64946522
+## 284                                      Touma, Miss. Maria Youssef 0.59111294
+## 285                                     Rosblom, Miss. Salli Helena 0.59111294
+## 286                                             Dennis, Mr. William 0.10655287
+## 287                          Franklin, Mr. Charles (Charles Fardon) 0.10655287
+## 288                                      Snyder, Mr. John Pillsbury 0.37832918
+## 289                                         Mardirosian, Mr. Sarkis 0.10655287
+## 290                                                Ford, Mr. Arthur 0.10655287
+## 291                             Rheims, Mr. George Alexander Lucien 0.43818663
+## 292                          Daly, Miss. Margaret Marcella Maggie&quot;&quot; 0.64946522
+## 293                                               Nasr, Mr. Mustafa 0.10655287
+## 294                                           Dodge, Dr. Washington 0.37832918
+## 295                                       Wittevrongel, Mr. Camille 0.10655287
+## 296                                            Angheloff, Mr. Minko 0.10655287
+## 297                                           Laroche, Miss. Louise 0.78709932
+## 298                                               Samaan, Mr. Hanna 0.06769243
+## 299                                      Loring, Mr. Joseph Holland 0.43818663
+## 300                                             Johansson, Mr. Nils 0.10655287
+## 301                                       Olsson, Mr. Oscar Wilhelm 0.10655287
+## 302                                             Malachard, Mr. Noel 0.23370898
+## 303                                     Phillips, Mr. Escott Robert 0.23370898
+## 304                                               Pokrnic, Mr. Tome 0.10655287
+## 305                               McCarthy, Miss. Catherine Katie&quot;&quot; 0.64946522
+## 306      Crosby, Mrs. Edward Gifford (Catherine Elizabeth Halstead) 0.90434727
+## 307                            Allison, Mr. Hudson Joshua Creighton 0.37832918
+## 308                                       Aks, Master. Philip Frank 0.10655287
+## 309                                      Hays, Mr. Charles Melville 0.37832918
+## 310                      Hansen, Mrs. Claus Peter (Jennie L Howard) 0.59111294
+## 311                                            Cacic, Mr. Jego Grga 0.10655287
+## 312                                            Vartanian, Mr. David 0.10655287
+## 313                                             Sadowitz, Mr. Harry 0.10655287
+## 314                                             Carr, Miss. Jeannie 0.64946522
+## 315                           White, Mrs. John Stuart (Ella Holmes) 0.92376313
+## 316                                            Hagardon, Miss. Kate 0.64946522
+## 317                                   Spencer, Mr. William Augustus 0.37832918
+## 318                                      Rogers, Mr. Reginald Harry 0.23370898
+## 319                                       Jonsson, Mr. Nils Hilding 0.10655287
+## 320                                    Jefferys, Mr. Ernest Wilfred 0.15660247
+## 321                                     Andersson, Mr. Johan Samuel 0.10655287
+## 322                                           Krekorian, Mr. Neshan 0.10655287
+## 323                                              Nesson, Mr. Israel 0.23370898
+## 324                                              Rowe, Mr. Alfred G 0.43818663
+## 325                                          Kreuchen, Miss. Emilie 0.92376313
+## 326                                                  Assam, Mr. Ali 0.10655287
+## 327                                    Becker, Miss. Ruth Elizabeth 0.74257728
+## 328                     Rosenshine, Mr. George (Mr George Thorne&quot;)&quot; 0.43818663
+## 329                                   Clarke, Mr. Charles Valentine 0.19222661
+## 330                                             Enander, Mr. Ingvar 0.23370898
+## 331           Davies, Mrs. John Morgan (Elizabeth Agnes Mary White) 0.82572825
+## 332                                    Dulles, Mr. William Crothers 0.43818663
+## 333                                             Thomas, Mr. Tannous 0.10655287
+## 334                           Nakid, Mrs. Said (Waika Mary&quot; Mowad)&quot; 0.59111294
+## 335                                                   Cor, Mr. Ivan 0.10655287
+## 336                                        Maguire, Mr. John Edward 0.43818663
+## 337                                      de Brito, Mr. Jose Joaquim 0.23370898
+## 338                                               Elias, Mr. Joseph 0.10655287
+## 339                                            Denbury, Mr. Herbert 0.23370898
+## 340                                           Betros, Master. Seman 0.10655287
+## 341                                   Fillbrook, Mr. Joseph Charles 0.23370898
+## 342                                      Lundstrom, Mr. Thure Edvin 0.10655287
+## 343                                           Sage, Mr. John George 0.08513275
+## 344 Cardeza, Mrs. James Warburton Martinez (Charlotte Wardle Drake) 0.92376313
+## 345                             van Billiard, Master. James William 0.08513275
+## 346                                     Abelseth, Miss. Karen Marie 0.64946522
+## 347                                      Botsford, Mr. William Hull 0.23370898
+## 348                 Whabee, Mrs. George Joseph (Shawneene Abi-Saab) 0.64946522
+## 349                                                Giles, Mr. Ralph 0.23370898
+## 350                                          Walcroft, Miss. Nellie 0.82572825
+## 351                    Greenfield, Mrs. Leo David (Blanche Strouse) 0.92376313
+## 352                                       Stokes, Mr. Philip Joseph 0.23370898
+## 353                                             Dibden, Mr. William 0.23370898
+## 354                                              Herman, Mr. Samuel 0.19222661
+## 355                         Dean, Miss. Elizabeth Gladys Millvina&quot;&quot; 0.59111294
+## 356                                        Julian, Mr. Henry Forbes 0.43818663
+## 357                  Brown, Mrs. John Murray (Caroline Lane Lamson) 0.88062562
+## 358                                             Lockyer, Mr. Edward 0.10655287
+## 359                                            O&#39;Keefe, Mr. Patrick 0.10655287
+## 360             Lindell, Mrs. Edvard Bengtsson (Elin Gerda Persson) 0.59111294
+## 361                                     Sage, Master. William Henry 0.01612043
+## 362                         Mallet, Mrs. Albert (Antoinette Magnin) 0.78709932
+## 363                    Ware, Mrs. John James (Florence Louise Long) 0.82572825
+## 364                                               Strilic, Mr. Ivan 0.10655287
+## 365                    Harder, Mrs. George Achilles (Dorothy Annan) 0.90434727
+## 366                                  Sage, Mrs. John (Annie Bullen) 0.59111294
+## 367                                               Caram, Mr. Joseph 0.08513275
+## 368                    Riihivouri, Miss. Susanna Juhantytar Sanni&quot;&quot; 0.64946522
+## 369                         Gibson, Mrs. Leonard (Pauline C Boeson) 0.92376313
+## 370                                   Pallas y Castello, Mr. Emilio 0.23370898
+## 371                                                Giles, Mr. Edgar 0.19222661
+## 372                                       Wilson, Miss. Helen Alice 0.92376313
+## 373                                         Ismay, Mr. Joseph Bruce 0.43818663
+## 374                                          Harbeck, Mr. William H 0.23370898
+## 375                           Dodge, Mrs. Washington (Ruth Vidaver) 0.90434727
+## 376                                        Bowen, Miss. Grace Scott 0.92376313
+## 377                                               Kink, Miss. Maria 0.53007536
+## 378                                    Cotterill, Mr. Henry Harry&quot;&quot; 0.23370898
+## 379                                     Hipkins, Mr. William Edward 0.43818663
+## 380                                     Asplund, Master. Carl Edgar 0.04233309
+## 381                                           O&#39;Connor, Mr. Patrick 0.10655287
+## 382                                               Foley, Mr. Joseph 0.10655287
+## 383                                      Risien, Mrs. Samuel (Emma) 0.64946522
+## 384                             McNamee, Mrs. Neal (Eileen O&#39;Leary) 0.59111294
+## 385                                  Wheeler, Mr. Edwin Frederick&quot;&quot; 0.23370898
+## 386                                              Herman, Miss. Kate 0.78709932
+## 387                                  Aronsson, Mr. Ernst Axel Algot 0.10655287
+## 388                                                 Ashby, Mr. John 0.23370898
+## 389                                            Canavan, Mr. Patrick 0.10655287
+## 390                                     Palsson, Master. Paul Folke 0.05361555
+## 391                                      Payne, Mr. Vivian Ponsonby 0.43818663
+## 392                  Lines, Mrs. Ernest H (Elizabeth Lindsey James) 0.92376313
+## 393                                   Abbott, Master. Eugene Joseph 0.10655287
+## 394                                            Gilbert, Mr. William 0.23370898
+## 395                                        Kink-Heilmann, Mr. Anton 0.05361555
+## 396                  Smith, Mrs. Lucien Philip (Mary Eloise Hughes) 0.90434727
+## 397                                            Colbert, Mr. Patrick 0.10655287
+## 398 Frolicher-Stehli, Mrs. Maxmillian (Margaretha Emerentia Stehli) 0.90434727
+## 399                                  Larsson-Rondberg, Mr. Edvard A 0.10655287
+## 400                                        Conlon, Mr. Thomas Henry 0.10655287
+## 401                                         Bonnell, Miss. Caroline 0.92376313
+## 402                                                 Gale, Mr. Harry 0.19222661
+## 403                                  Gibson, Miss. Dorothy Winifred 0.92376313
+## 404                                          Carrau, Mr. Jose Pedro 0.43818663
+## 405                                    Frauenthal, Mr. Isaac Gerald 0.37832918
+## 406                    Nourney, Mr. Alfred (Baron von Drachstedt&quot;)&quot; 0.23370898
+## 407                                       Ware, Mr. William Jeffery 0.19222661
+## 408                                      Widener, Mr. George Dunton 0.37832918
+## 409                                 Riordan, Miss. Johanna Hannah&quot;&quot; 0.64946522
+## 410                                       Peacock, Miss. Treasteall 0.59111294
+## 411                                          Naughton, Miss. Hannah 0.64946522
+## 412                 Minahan, Mrs. William Edward (Lillian E Thorpe) 0.90434727
+## 413                                  Henriksson, Miss. Jenny Lovisa 0.64946522
+## 414                                              Spector, Mr. Woolf 0.10655287
+## 415                                    Oliva y Ocana, Dona. Fermina 0.92376313
+## 416                                    Saether, Mr. Simon Sivertsen 0.10655287
+## 417                                             Ware, Mr. Frederick 0.10655287
+## 418                                        Peter, Master. Michael J 0.08513275</code></pre>
+</div>
 <div id="we-can-see-the-survival-probability-for-each-of-the-passengers-along-with-their-name-and-passenger-id." class="section level3">
 <h3>We can see the survival probability for each of the passengers along with their name and passenger ID.</h3>
 </div>
@@ -1441,7 +1445,7 @@ output</code></pre>
 ## 418             1309
 ##                                                           test.Name Survived
 ## 1                                                  Kelly, Mr. James        0
-## 2                                  Wilkes, Mrs. James (Ellen Needs)        0
+## 2                                  Wilkes, Mrs. James (Ellen Needs)        1
 ## 3                                         Myles, Mr. Thomas Francis        0
 ## 4                                                  Wirz, Mr. Albert        0
 ## 5                      Hirvonen, Mrs. Alexander (Helga E Lindqvist)        1
@@ -1450,7 +1454,7 @@ output</code></pre>
 ## 8                                      Caldwell, Mr. Albert Francis        0
 ## 9                         Abrahim, Mrs. Joseph (Sophie Halaut Easu)        1
 ## 10                                          Davies, Mr. John Samuel        0
-## 11                                                 Ilieff, Mr. Ylio       NA
+## 11                                                 Ilieff, Mr. Ylio        0
 ## 12                                       Jones, Mr. Charles Cresson        0
 ## 13                    Snyder, Mrs. John Pillsbury (Nelle Stevenson)        1
 ## 14                                             Howard, Mr. Benjamin        0
@@ -1459,82 +1463,82 @@ output</code></pre>
 ## 17                                                Keane, Mr. Daniel        0
 ## 18                                                Assaf, Mr. Gerios        0
 ## 19                                     Ilmakangas, Miss. Ida Livija        1
-## 20                            Assaf Khalil, Mrs. Mariana (Miriam&quot;)&quot;        0
+## 20                            Assaf Khalil, Mrs. Mariana (Miriam&quot;)&quot;        1
 ## 21                                           Rothschild, Mr. Martin        0
 ## 22                                        Olsen, Master. Artur Karl        0
-## 23                             Flegenheim, Mrs. Alfred (Antoinette)       NA
-## 24                                  Williams, Mr. Richard Norris II        1
+## 23                             Flegenheim, Mrs. Alfred (Antoinette)        1
+## 24                                  Williams, Mr. Richard Norris II        0
 ## 25                  Ryerson, Mrs. Arthur Larned (Emily Maria Borie)        1
 ## 26                                          Robins, Mr. Alexander A        0
 ## 27                                     Ostby, Miss. Helene Ragnhild        1
 ## 28                                                Daher, Mr. Shedid        0
 ## 29                                          Brady, Mr. John Bertram        0
-## 30                                                Samaan, Mr. Elias       NA
+## 30                                                Samaan, Mr. Elias        0
 ## 31                                     Louch, Mr. Charles Alexander        0
 ## 32                                    Jefferys, Mr. Clifford Thomas        0
-## 33                         Dean, Mrs. Bertram (Eva Georgetta Light)        0
-## 34                Johnston, Mrs. Andrew G (Elizabeth Lily&quot; Watson)&quot;       NA
+## 33                         Dean, Mrs. Bertram (Eva Georgetta Light)        1
+## 34                Johnston, Mrs. Andrew G (Elizabeth Lily&quot; Watson)&quot;        1
 ## 35                                         Mock, Mr. Philipp Edmund        0
 ## 36                 Katavelas, Mr. Vassilios (Catavelas Vassilios&quot;)&quot;        0
-## 37                                              Roth, Miss. Sarah A       NA
+## 37                                              Roth, Miss. Sarah A        1
 ## 38                                               Cacic, Miss. Manda        1
 ## 39                                                  Sap, Mr. Julius        0
-## 40                                                    Hee, Mr. Ling       NA
+## 40                                                    Hee, Mr. Ling        0
 ## 41                                                 Karun, Mr. Franz        0
-## 42                                      Franklin, Mr. Thomas Parham       NA
+## 42                                      Franklin, Mr. Thomas Parham        0
 ## 43                                            Goldsmith, Mr. Nathan        0
 ## 44                            Corbett, Mrs. Walter H (Irene Colvin)        1
 ## 45                 Kimball, Mrs. Edwin Nelson Jr (Gertrude Parsons)        1
 ## 46                                  Peltomaki, Mr. Nikolai Johannes        0
 ## 47                                         Chevre, Mr. Paul Romaine        0
-## 48                                         Shaughnessy, Mr. Patrick       NA
+## 48                                         Shaughnessy, Mr. Patrick        0
 ## 49                  Bucknell, Mrs. William Robert (Emma Eliza Ward)        1
 ## 50                   Coutts, Mrs. William (Winnie Minnie&quot; Treanor)&quot;        1
-## 51                                         Smith, Mr. Lucien Philip        1
+## 51                                         Smith, Mr. Lucien Philip        0
 ## 52                                               Pulbaum, Mr. Franz        0
 ## 53                                    Hocking, Miss. Ellen Nellie&quot;&quot;        1
 ## 54                                       Fortune, Miss. Ethel Flora        1
-## 55                                Mangiavacchi, Mr. Serafino Emilio       NA
+## 55                                Mangiavacchi, Mr. Serafino Emilio        0
 ## 56                                             Rice, Master. Albert        0
 ## 57                                                  Cor, Mr. Bartol        0
 ## 58                                    Abelseth, Mr. Olaus Jorgensen        0
-## 59                                        Davison, Mr. Thomas Henry       NA
+## 59                                        Davison, Mr. Thomas Henry        0
 ## 60                                      Chaudanson, Miss. Victorine        1
 ## 61                                                  Dika, Mr. Mirko        0
 ## 62                                        McCrae, Mr. Arthur Gordon        0
 ## 63                                     Bjorklund, Mr. Ernst Herbert        0
 ## 64                                     Bradley, Miss. Bridget Delia        1
-## 65                                      Ryerson, Master. John Borie        1
-## 66              Corey, Mrs. Percy C (Mary Phyllis Elizabeth Miller)       NA
+## 65                                      Ryerson, Master. John Borie        0
+## 66              Corey, Mrs. Percy C (Mary Phyllis Elizabeth Miller)        1
 ## 67                                          Burns, Miss. Mary Delia        1
 ## 68                                   Moore, Mr. Clarence Bloomfield        0
-## 69                                  Tucker, Mr. Gilbert Milligan Jr        1
+## 69                                  Tucker, Mr. Gilbert Milligan Jr        0
 ## 70                              Fortune, Mrs. Mark (Mary McDougald)        1
 ## 71                                        Mulvihill, Miss. Bertha E        1
 ## 72                                               Minkoff, Mr. Lazar        0
 ## 73                                   Nieminen, Miss. Manta Josefina        1
-## 74                                  Ovies y Rodriguez, Mr. Servando        1
+## 74                                  Ovies y Rodriguez, Mr. Servando        0
 ## 75                                             Geiger, Miss. Amalie        1
-## 76                                               Keeping, Mr. Edwin        1
-## 77                                                 Miles, Mr. Frank       NA
+## 76                                               Keeping, Mr. Edwin        0
+## 77                                                 Miles, Mr. Frank        0
 ## 78             Cornell, Mrs. Robert Clifford (Malvina Helen Lamson)        1
 ## 79                                   Aldworth, Mr. Charles Augustus        0
 ## 80                                           Doyle, Miss. Elizabeth        1
 ## 81                                             Boulos, Master. Akar        0
 ## 82                                               Straus, Mr. Isidor        0
 ## 83                                           Case, Mr. Howard Brown        0
-## 84                                             Demetri, Mr. Marinko       NA
-## 85                                            Lamb, Mr. John Joseph       NA
-## 86                                               Khalil, Mr. Betros       NA
+## 84                                             Demetri, Mr. Marinko        0
+## 85                                            Lamb, Mr. John Joseph        0
+## 86                                               Khalil, Mr. Betros        0
 ## 87                                               Barry, Miss. Julia        1
 ## 88                                       Badman, Miss. Emily Louisa        1
-## 89                                          O&#39;Donoghue, Ms. Bridget       NA
+## 89                                          O&#39;Donoghue, Ms. Bridget        1
 ## 90                                      Wells, Master. Ralph Lester        0
 ## 91      Dyker, Mrs. Adolf Fredrik (Anna Elisabeth Judith Andersson)        1
-## 92                                               Pedersen, Mr. Olaf       NA
+## 92                                               Pedersen, Mr. Olaf        0
 ## 93                             Davidson, Mrs. Thornton (Orian Hays)        1
-## 94                                                Guest, Mr. Robert       NA
-## 95                                              Birnbaum, Mr. Jakob        1
+## 94                                                Guest, Mr. Robert        0
+## 95                                              Birnbaum, Mr. Jakob        0
 ## 96                                       Tenglin, Mr. Gunnar Isidor        0
 ## 97           Cavendish, Mrs. Tyrell William (Julia Florence Siegel)        1
 ## 98                                        Makinen, Mr. Kalle Edvard        0
@@ -1542,38 +1546,38 @@ output</code></pre>
 ## 100                                    Nancarrow, Mr. William Henry        0
 ## 101             Stengel, Mrs. Charles Emil Henry (Annie May Morris)        1
 ## 102                                              Weisz, Mr. Leopold        0
-## 103                                              Foley, Mr. William       NA
+## 103                                              Foley, Mr. William        0
 ## 104                          Johansson Palmquist, Mr. Oskar Leander        0
 ## 105                       Thomas, Mrs. Alexander (Thamine Thelma&quot;)&quot;        1
 ## 106                                       Holthen, Mr. Johan Martin        0
 ## 107                                             Buckley, Mr. Daniel        0
-## 108                                                Ryan, Mr. Edward       NA
-## 109                                Willer, Mr. Aaron (Abi Weller&quot;)&quot;       NA
+## 108                                                Ryan, Mr. Edward        0
+## 109                                Willer, Mr. Aaron (Abi Weller&quot;)&quot;        0
 ## 110                                               Swane, Mr. George        0
 ## 111                                        Stanton, Mr. Samuel Ward        0
-## 112                                      Shine, Miss. Ellen Natalia       NA
+## 112                                      Shine, Miss. Ellen Natalia        1
 ## 113                                        Evans, Miss. Edith Corse        1
 ## 114                                        Buckley, Miss. Katherine        1
 ## 115                          Straus, Mrs. Isidor (Rosalie Ida Blun)        1
 ## 116                                     Chronopoulos, Mr. Demetrios        0
-## 117                                                Thomas, Mr. John       NA
+## 117                                                Thomas, Mr. John        0
 ## 118                                 Sandstrom, Miss. Beatrice Irene        1
-## 119                                            Beattie, Mr. Thomson        1
+## 119                                            Beattie, Mr. Thomson        0
 ## 120                 Chapman, Mrs. John Henry (Sara Elizabeth Lawry)        1
 ## 121                                            Watt, Miss. Bertha J        1
-## 122                                               Kiernan, Mr. John       NA
+## 122                                               Kiernan, Mr. John        0
 ## 123                                 Schabert, Mrs. Paul (Emma Mock)        1
 ## 124                                         Carver, Mr. Alfred John        0
-## 125                                               Kennedy, Mr. John       NA
+## 125                                               Kennedy, Mr. John        0
 ## 126                                        Cribb, Miss. Laura Alice        1
 ## 127                                        Brobeck, Mr. Karl Rudolf        0
-## 128                                             McCoy, Miss. Alicia       NA
+## 128                                             McCoy, Miss. Alicia        1
 ## 129                                            Bowenur, Mr. Solomon        0
 ## 130                                            Petersen, Mr. Marius        0
 ## 131                                         Spinner, Mr. Henry John        0
 ## 132                                       Gracie, Col. Archibald IV        0
-## 133                                   Lefebre, Mrs. Frank (Frances)       NA
-## 134                                           Thomas, Mr. Charles P       NA
+## 133                                   Lefebre, Mrs. Frank (Frances)        1
+## 134                                           Thomas, Mr. Charles P        0
 ## 135                                          Dintcheff, Mr. Valtcho        0
 ## 136                                       Carlsson, Mr. Carl Robert        0
 ## 137                                       Zakarian, Mr. Mapriededer        0
@@ -1586,12 +1590,12 @@ output</code></pre>
 ## 144                                      Beauchamp, Mr. Henry James        0
 ## 145           Lindeberg-Lind, Mr. Erik Gustaf (Mr Edward Lingrey&quot;)&quot;        0
 ## 146                                       Vander Planke, Mr. Julius        0
-## 147                                     Hilliard, Mr. Herbert Henry       NA
+## 147                                     Hilliard, Mr. Herbert Henry        0
 ## 148                                                Davies, Mr. Evan        0
-## 149                                       Crafton, Mr. John Bertram       NA
+## 149                                       Crafton, Mr. John Bertram        0
 ## 150                                          Lahtinen, Rev. William        0
 ## 151                           Earnshaw, Mrs. Boulton (Olive Potter)        1
-## 152                                            Matinoff, Mr. Nicola       NA
+## 152                                            Matinoff, Mr. Nicola        0
 ## 153                                              Storey, Mr. Thomas        0
 ## 154                  Klasen, Mrs. (Hulda Kristina Eugenia Lofqvist)        1
 ## 155                                    Asplund, Master. Filip Oscar        0
@@ -1600,20 +1604,20 @@ output</code></pre>
 ## 158                                        Lundin, Miss. Olga Elida        1
 ## 159                                        Borebank, Mr. John James        0
 ## 160                             Peacock, Mrs. Benjamin (Edith Nile)        1
-## 161                                              Smyth, Miss. Julia       NA
+## 161                                              Smyth, Miss. Julia        1
 ## 162                                  Touma, Master. Georges Youssef        0
 ## 163                                            Wright, Miss. Marion        1
-## 164                                              Pearce, Mr. Ernest       NA
+## 164                                              Pearce, Mr. Ernest        0
 ## 165                                   Peruschitz, Rev. Joseph Maria        0
 ## 166                      Kink-Heilmann, Mrs. Anton (Luise Heilmann)        1
 ## 167                                              Brandeis, Mr. Emil        0
 ## 168                                         Ford, Mr. Edward Watson        0
-## 169     Cassebeer, Mrs. Henry Arthur Jr (Eleanor Genevieve Fosdick)       NA
+## 169     Cassebeer, Mrs. Henry Arthur Jr (Eleanor Genevieve Fosdick)        1
 ## 170                                    Hellstrom, Miss. Hilda Maria        1
-## 171                                              Lithman, Mr. Simon       NA
+## 171                                              Lithman, Mr. Simon        0
 ## 172                                             Zakarian, Mr. Ortin        0
 ## 173                                        Dyker, Mr. Adolf Fredrik        0
-## 174                                                Torfa, Mr. Assad       NA
+## 174                                                Torfa, Mr. Assad        0
 ## 175                      Asplund, Mr. Carl Oscar Vilhelm Gustafsson        0
 ## 176                                       Brown, Miss. Edith Eileen        1
 ## 177                                            Sincock, Miss. Maude        1
@@ -1623,57 +1627,57 @@ output</code></pre>
 ## 181                                       McCrie, Mr. James Matthew        0
 ## 182                                Compton, Mr. Alexander Taylor Jr        0
 ## 183  Marvin, Mrs. Daniel Warner (Mary Graham Carmichael Farquarson)        1
-## 184                                               Lane, Mr. Patrick       NA
+## 184                                               Lane, Mr. Patrick        0
 ## 185            Douglas, Mrs. Frederick Charles (Mary Helene Baxter)        1
 ## 186                                       Maybery, Mr. Frank Hubert        0
 ## 187                            Phillips, Miss. Alice Frances Louisa        1
 ## 188                                              Davies, Mr. Joseph        0
-## 189                                                 Sage, Miss. Ada       NA
+## 189                                                 Sage, Miss. Ada        0
 ## 190                                                 Veal, Mr. James        0
 ## 191                                            Angle, Mr. William A        0
-## 192                                          Salomon, Mr. Abraham L       NA
+## 192                                          Salomon, Mr. Abraham L        0
 ## 193                               van Billiard, Master. Walter John        0
 ## 194                                               Lingane, Mr. John        0
 ## 195                                   Drew, Master. Marshall Brines        0
 ## 196                               Karlsson, Mr. Julius Konrad Eugen        0
-## 197                                 Spedden, Master. Robert Douglas        1
+## 197                                 Spedden, Master. Robert Douglas        0
 ## 198                                     Nilsson, Miss. Berta Olivia        1
 ## 199                                  Baimbrigge, Mr. Charles Robert        0
-## 200                         Rasmussen, Mrs. (Lena Jacobsen Solvang)       NA
-## 201                                              Murphy, Miss. Nora       NA
+## 200                         Rasmussen, Mrs. (Lena Jacobsen Solvang)        1
+## 201                                              Murphy, Miss. Nora        1
 ## 202                         Danbom, Master. Gilbert Sigvard Emanuel        0
 ## 203                                          Astor, Col. John Jacob        0
 ## 204                                      Quick, Miss. Winifred Vera        1
 ## 205                                        Andrew, Mr. Frank Thomas        0
-## 206                                       Omont, Mr. Alfred Fernand       NA
+## 206                                       Omont, Mr. Alfred Fernand        0
 ## 207                                        McGowan, Miss. Katherine        1
 ## 208                                    Collett, Mr. Sidney C Stuart        0
 ## 209                                   Rosenbaum, Miss. Edith Louise        1
 ## 210                                              Delalic, Mr. Redjo        0
 ## 211                                     Andersen, Mr. Albert Karvin        0
-## 212                                               Finoli, Mr. Luigi       NA
+## 212                                               Finoli, Mr. Luigi        0
 ## 213                                       Deacon, Mr. Percy William        0
-## 214                    Howard, Mrs. Benjamin (Ellen Truelove Arman)        0
+## 214                    Howard, Mrs. Benjamin (Ellen Truelove Arman)        1
 ## 215                          Andersson, Miss. Ida Augusta Margareta        0
 ## 216                                           Head, Mr. Christopher        0
-## 217                                      Mahon, Miss. Bridget Delia       NA
+## 217                                      Mahon, Miss. Bridget Delia        1
 ## 218                                        Wick, Mr. George Dennick        0
 ## 219                    Widener, Mrs. George Dunton (Eleanor Elkins)        1
-## 220                                 Thomson, Mr. Alexander Morrison       NA
+## 220                                 Thomson, Mr. Alexander Morrison        0
 ## 221                                  Duran y More, Miss. Florentina        1
 ## 222                                          Reynolds, Mr. Harold J        0
 ## 223                                      Cook, Mrs. (Selena Rogers)        1
 ## 224                                   Karlsson, Mr. Einar Gervasius        0
 ## 225                Candee, Mrs. Edward (Helen Churchill Hungerford)        1
-## 226                Moubarek, Mrs. George (Omine Amenia&quot; Alexander)&quot;       NA
+## 226                Moubarek, Mrs. George (Omine Amenia&quot; Alexander)&quot;        1
 ## 227                                      Asplund, Mr. Johan Charles        0
-## 228                                          McNeill, Miss. Bridget       NA
+## 228                                          McNeill, Miss. Bridget        1
 ## 229                                       Everett, Mr. Thomas James        0
 ## 230                              Hocking, Mr. Samuel James Metcalfe        0
 ## 231                                     Sweet, Mr. George Frederick        0
 ## 232                                        Willard, Miss. Constance        1
 ## 233                                         Wiklund, Mr. Karl Johan        0
-## 234                                            Linehan, Mr. Michael       NA
+## 234                                            Linehan, Mr. Michael        0
 ## 235                                       Cumings, Mr. John Bradley        0
 ## 236                                          Vendel, Mr. Olof Edvin        0
 ## 237                                        Warren, Mr. Frank Manley        0
@@ -1683,20 +1687,20 @@ output</code></pre>
 ## 241                       Lindstrom, Mrs. Carl Johan (Sigrid Posse)        1
 ## 242                                   Christy, Mrs. (Alice Frances)        1
 ## 243                                    Spedden, Mr. Frederic Oakley        0
-## 244                                              Hyman, Mr. Abraham       NA
-## 245                       Johnston, Master. William Arthur Willie&quot;&quot;       NA
+## 244                                              Hyman, Mr. Abraham        0
+## 245                       Johnston, Master. William Arthur Willie&quot;&quot;        0
 ## 246                                         Kenyon, Mr. Frederick R        0
 ## 247                           Karnes, Mrs. J Frank (Claire Bennett)        1
 ## 248                                          Drew, Mr. James Vivian        0
 ## 249                        Hold, Mrs. Stephen (Annie Margaret Hill)        1
-## 250                       Khalil, Mrs. Betros (Zahie Maria&quot; Elias)&quot;       NA
+## 250                       Khalil, Mrs. Betros (Zahie Maria&quot; Elias)&quot;        1
 ## 251                                           West, Miss. Barbara J        1
 ## 252                        Abrahamsson, Mr. Abraham August Johannes        0
-## 253                                        Clark, Mr. Walter Miller        1
+## 253                                        Clark, Mr. Walter Miller        0
 ## 254                                        Salander, Mr. Karl Johan        0
 ## 255                                             Wenzel, Mr. Linhart        0
-## 256                                      MacKay, Mr. George William       NA
-## 257                                                 Mahon, Mr. John       NA
+## 256                                      MacKay, Mr. George William        0
+## 257                                                 Mahon, Mr. John        0
 ## 258                                           Niklasson, Mr. Samuel        0
 ## 259                                         Bentham, Miss. Lilian W        1
 ## 260                                        Midtsjo, Mr. Karl Albert        0
@@ -1705,16 +1709,16 @@ output</code></pre>
 ## 263               Wells, Mrs. Arthur Henry (Addie&quot; Dart Trevaskis)&quot;        1
 ## 264                                    Klasen, Miss. Gertrud Emilia        1
 ## 265                          Portaluppi, Mr. Emilio Ilario Giuseppe        0
-## 266                                           Lyntakoff, Mr. Stanko       NA
-## 267                           Chisholm, Mr. Roderick Robert Crispin       NA
-## 268                                     Warren, Mr. Charles William       NA
-## 269                                     Howard, Miss. May Elizabeth       NA
+## 266                                           Lyntakoff, Mr. Stanko        0
+## 267                           Chisholm, Mr. Roderick Robert Crispin        0
+## 268                                     Warren, Mr. Charles William        0
+## 269                                     Howard, Miss. May Elizabeth        1
 ## 270                                               Pokrnic, Mr. Mate        0
 ## 271                                    McCaffry, Mr. Thomas Francis        0
-## 272                                                Fox, Mr. Patrick       NA
+## 272                                                Fox, Mr. Patrick        0
 ## 273                   Clark, Mrs. Walter Miller (Virginia McDowell)        1
-## 274                                              Lennon, Miss. Mary       NA
-## 275                                           Saade, Mr. Jean Nassr       NA
+## 274                                              Lennon, Miss. Mary        1
+## 275                                           Saade, Mr. Jean Nassr        0
 ## 276                              Bryhl, Miss. Dagmar Jenny Ingeborg        1
 ## 277                                    Parker, Mr. Clifford Richard        0
 ## 278                                           Faunthorpe, Mr. Harry        0
@@ -1722,37 +1726,37 @@ output</code></pre>
 ## 280                                       Oxenham, Mr. Percy Thomas        0
 ## 281                                          Oreskovic, Miss. Jelka        1
 ## 282                                  Peacock, Master. Alfred Edward        0
-## 283                                           Fleming, Miss. Honora       NA
+## 283                                           Fleming, Miss. Honora        1
 ## 284                                      Touma, Miss. Maria Youssef        1
 ## 285                                     Rosblom, Miss. Salli Helena        1
 ## 286                                             Dennis, Mr. William        0
-## 287                          Franklin, Mr. Charles (Charles Fardon)       NA
-## 288                                      Snyder, Mr. John Pillsbury        1
-## 289                                         Mardirosian, Mr. Sarkis       NA
-## 290                                                Ford, Mr. Arthur       NA
-## 291                             Rheims, Mr. George Alexander Lucien       NA
+## 287                          Franklin, Mr. Charles (Charles Fardon)        0
+## 288                                      Snyder, Mr. John Pillsbury        0
+## 289                                         Mardirosian, Mr. Sarkis        0
+## 290                                                Ford, Mr. Arthur        0
+## 291                             Rheims, Mr. George Alexander Lucien        0
 ## 292                          Daly, Miss. Margaret Marcella Maggie&quot;&quot;        1
-## 293                                               Nasr, Mr. Mustafa       NA
+## 293                                               Nasr, Mr. Mustafa        0
 ## 294                                           Dodge, Dr. Washington        0
 ## 295                                       Wittevrongel, Mr. Camille        0
 ## 296                                            Angheloff, Mr. Minko        0
 ## 297                                           Laroche, Miss. Louise        1
-## 298                                               Samaan, Mr. Hanna       NA
-## 299                                      Loring, Mr. Joseph Holland        1
+## 298                                               Samaan, Mr. Hanna        0
+## 299                                      Loring, Mr. Joseph Holland        0
 ## 300                                             Johansson, Mr. Nils        0
 ## 301                                       Olsson, Mr. Oscar Wilhelm        0
-## 302                                             Malachard, Mr. Noel       NA
+## 302                                             Malachard, Mr. Noel        0
 ## 303                                     Phillips, Mr. Escott Robert        0
 ## 304                                               Pokrnic, Mr. Tome        0
-## 305                               McCarthy, Miss. Catherine Katie&quot;&quot;       NA
+## 305                               McCarthy, Miss. Catherine Katie&quot;&quot;        1
 ## 306      Crosby, Mrs. Edward Gifford (Catherine Elizabeth Halstead)        1
 ## 307                            Allison, Mr. Hudson Joshua Creighton        0
 ## 308                                       Aks, Master. Philip Frank        0
 ## 309                                      Hays, Mr. Charles Melville        0
-## 310                      Hansen, Mrs. Claus Peter (Jennie L Howard)        0
+## 310                      Hansen, Mrs. Claus Peter (Jennie L Howard)        1
 ## 311                                            Cacic, Mr. Jego Grga        0
 ## 312                                            Vartanian, Mr. David        0
-## 313                                             Sadowitz, Mr. Harry       NA
+## 313                                             Sadowitz, Mr. Harry        0
 ## 314                                             Carr, Miss. Jeannie        1
 ## 315                           White, Mrs. John Stuart (Ella Holmes)        1
 ## 316                                            Hagardon, Miss. Kate        1
@@ -1763,7 +1767,7 @@ output</code></pre>
 ## 321                                     Andersson, Mr. Johan Samuel        0
 ## 322                                           Krekorian, Mr. Neshan        0
 ## 323                                              Nesson, Mr. Israel        0
-## 324                                              Rowe, Mr. Alfred G        1
+## 324                                              Rowe, Mr. Alfred G        0
 ## 325                                          Kreuchen, Miss. Emilie        1
 ## 326                                                  Assam, Mr. Ali        0
 ## 327                                    Becker, Miss. Ruth Elizabeth        1
@@ -1772,22 +1776,22 @@ output</code></pre>
 ## 330                                             Enander, Mr. Ingvar        0
 ## 331           Davies, Mrs. John Morgan (Elizabeth Agnes Mary White)        1
 ## 332                                    Dulles, Mr. William Crothers        0
-## 333                                             Thomas, Mr. Tannous       NA
+## 333                                             Thomas, Mr. Tannous        0
 ## 334                           Nakid, Mrs. Said (Waika Mary&quot; Mowad)&quot;        1
 ## 335                                                   Cor, Mr. Ivan        0
-## 336                                        Maguire, Mr. John Edward        1
+## 336                                        Maguire, Mr. John Edward        0
 ## 337                                      de Brito, Mr. Jose Joaquim        0
 ## 338                                               Elias, Mr. Joseph        0
 ## 339                                            Denbury, Mr. Herbert        0
-## 340                                           Betros, Master. Seman       NA
+## 340                                           Betros, Master. Seman        0
 ## 341                                   Fillbrook, Mr. Joseph Charles        0
 ## 342                                      Lundstrom, Mr. Thure Edvin        0
-## 343                                           Sage, Mr. John George       NA
+## 343                                           Sage, Mr. John George        0
 ## 344 Cardeza, Mrs. James Warburton Martinez (Charlotte Wardle Drake)        1
-## 345                             van Billiard, Master. James William       NA
+## 345                             van Billiard, Master. James William        0
 ## 346                                     Abelseth, Miss. Karen Marie        1
 ## 347                                      Botsford, Mr. William Hull        0
-## 348                 Whabee, Mrs. George Joseph (Shawneene Abi-Saab)        0
+## 348                 Whabee, Mrs. George Joseph (Shawneene Abi-Saab)        1
 ## 349                                                Giles, Mr. Ralph        0
 ## 350                                          Walcroft, Miss. Nellie        1
 ## 351                    Greenfield, Mrs. Leo David (Blanche Strouse)        1
@@ -1797,16 +1801,16 @@ output</code></pre>
 ## 355                         Dean, Miss. Elizabeth Gladys Millvina&quot;&quot;        1
 ## 356                                        Julian, Mr. Henry Forbes        0
 ## 357                  Brown, Mrs. John Murray (Caroline Lane Lamson)        1
-## 358                                             Lockyer, Mr. Edward       NA
-## 359                                            O&#39;Keefe, Mr. Patrick       NA
-## 360             Lindell, Mrs. Edvard Bengtsson (Elin Gerda Persson)        0
+## 358                                             Lockyer, Mr. Edward        0
+## 359                                            O&#39;Keefe, Mr. Patrick        0
+## 360             Lindell, Mrs. Edvard Bengtsson (Elin Gerda Persson)        1
 ## 361                                     Sage, Master. William Henry        0
 ## 362                         Mallet, Mrs. Albert (Antoinette Magnin)        1
 ## 363                    Ware, Mrs. John James (Florence Louise Long)        1
 ## 364                                               Strilic, Mr. Ivan        0
 ## 365                    Harder, Mrs. George Achilles (Dorothy Annan)        1
-## 366                                  Sage, Mrs. John (Annie Bullen)       NA
-## 367                                               Caram, Mr. Joseph       NA
+## 366                                  Sage, Mrs. John (Annie Bullen)        1
+## 367                                               Caram, Mr. Joseph        0
 ## 368                    Riihivouri, Miss. Susanna Juhantytar Sanni&quot;&quot;        1
 ## 369                         Gibson, Mrs. Leonard (Pauline C Boeson)        1
 ## 370                                   Pallas y Castello, Mr. Emilio        0
@@ -1816,21 +1820,21 @@ output</code></pre>
 ## 374                                          Harbeck, Mr. William H        0
 ## 375                           Dodge, Mrs. Washington (Ruth Vidaver)        1
 ## 376                                        Bowen, Miss. Grace Scott        1
-## 377                                               Kink, Miss. Maria        0
+## 377                                               Kink, Miss. Maria        1
 ## 378                                    Cotterill, Mr. Henry Harry&quot;&quot;        0
 ## 379                                     Hipkins, Mr. William Edward        0
 ## 380                                     Asplund, Master. Carl Edgar        0
-## 381                                           O&#39;Connor, Mr. Patrick       NA
+## 381                                           O&#39;Connor, Mr. Patrick        0
 ## 382                                               Foley, Mr. Joseph        0
-## 383                                      Risien, Mrs. Samuel (Emma)       NA
+## 383                                      Risien, Mrs. Samuel (Emma)        1
 ## 384                             McNamee, Mrs. Neal (Eileen O&#39;Leary)        1
-## 385                                  Wheeler, Mr. Edwin Frederick&quot;&quot;       NA
+## 385                                  Wheeler, Mr. Edwin Frederick&quot;&quot;        0
 ## 386                                              Herman, Miss. Kate        1
 ## 387                                  Aronsson, Mr. Ernst Axel Algot        0
 ## 388                                                 Ashby, Mr. John        0
 ## 389                                            Canavan, Mr. Patrick        0
 ## 390                                     Palsson, Master. Paul Folke        0
-## 391                                      Payne, Mr. Vivian Ponsonby        1
+## 391                                      Payne, Mr. Vivian Ponsonby        0
 ## 392                  Lines, Mrs. Ernest H (Elizabeth Lindsey James)        1
 ## 393                                   Abbott, Master. Eugene Joseph        0
 ## 394                                            Gilbert, Mr. William        0
@@ -1843,20 +1847,33 @@ output</code></pre>
 ## 401                                         Bonnell, Miss. Caroline        1
 ## 402                                                 Gale, Mr. Harry        0
 ## 403                                  Gibson, Miss. Dorothy Winifred        1
-## 404                                          Carrau, Mr. Jose Pedro        1
+## 404                                          Carrau, Mr. Jose Pedro        0
 ## 405                                    Frauenthal, Mr. Isaac Gerald        0
 ## 406                    Nourney, Mr. Alfred (Baron von Drachstedt&quot;)&quot;        0
 ## 407                                       Ware, Mr. William Jeffery        0
 ## 408                                      Widener, Mr. George Dunton        0
-## 409                                 Riordan, Miss. Johanna Hannah&quot;&quot;       NA
+## 409                                 Riordan, Miss. Johanna Hannah&quot;&quot;        1
 ## 410                                       Peacock, Miss. Treasteall        1
-## 411                                          Naughton, Miss. Hannah       NA
+## 411                                          Naughton, Miss. Hannah        1
 ## 412                 Minahan, Mrs. William Edward (Lillian E Thorpe)        1
 ## 413                                  Henriksson, Miss. Jenny Lovisa        1
-## 414                                              Spector, Mr. Woolf       NA
+## 414                                              Spector, Mr. Woolf        0
 ## 415                                    Oliva y Ocana, Dona. Fermina        1
 ## 416                                    Saether, Mr. Simon Sivertsen        0
-## 417                                             Ware, Mr. Frederick       NA
-## 418                                        Peter, Master. Michael J       NA</code></pre>
+## 417                                             Ware, Mr. Frederick        0
+## 418                                        Peter, Master. Michael J        0</code></pre>
+</div>
+<div id="to-determine-the-power-of-our-model-we-can-compare-our-output-dataframe-against-the-submission-csv-file-generated-from-the-kaggle-python-script." class="section level3">
+<h3>To determine, the power of our model we can compare our output dataframe against the submission csv file generated from the kaggle python script.</h3>
+<pre class="r"><code>compare &lt;- data.frame(1:418)
+compare &lt;- ifelse(output$Survived == submission$Survived, 1, 0)
+compare &lt;- as.numeric(compare)
+table(compare)</code></pre>
+<pre><code>## compare
+##   0   1 
+##   9 409</code></pre>
+</div>
+<div id="we-see-that-409-of-the-passangers-match-between-the-kaggle-and-the-model-i-have-developed-which-suggests-that-my-solution-is-fairly-accurate.-furthermore-the-kaggle-model-uses-the-parch-variable-which-i-have-excluded-only-resulting-in-9-differnces-suggesting-that-the-parch-variable-is-not-a-very-high-yield-predictor." class="section level3">
+<h3>We see that 409 of the passangers match between the Kaggle and the model I have developed which suggests that my solution is fairly accurate. Furthermore, the Kaggle model uses the Parch variable which I have excluded only resulting in 9 differnces suggesting that the Parch variable is not a very high-yield predictor.</h3>
 </div>
 </div>
