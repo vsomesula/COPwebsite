@@ -6,11 +6,7 @@ slug: a04-ethics-and-privacy
 categories: []
 tags: []
 ---
-```{r}
+```{r label, out.width = "100%", fig.cap = "certificate"}
 library(knitr)
 knitr::include_graphics("C:/Users/prana/Downloads/certificate.pdf")
 ```
-
-
-
-
