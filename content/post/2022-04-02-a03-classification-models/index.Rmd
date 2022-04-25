@@ -9,7 +9,10 @@ tags: []
 # Executive Summary
 ### The Titanic ship sinking was a great tragedy in history. The tragedy has generated data on which passenger survived and which did not. In addition to this data, other data has been collected for each passenger such as sex,name, and fare amongst other identifiers. The goal is to build a logistic model that predicts which passengers survive and which die.
 # Issues and challenges
-### The immediate challenge is to pick which variables to use for this logistic regression model as not all variables will be high yield predictors.
+### The immediate challenge is to pick which variables to use for this logistic regression model as not all variables will be high yield predictors. 
+
+**There are two dataframes that are long inserted into the webpage. These dataframes are put into the solution so that the reader may observe the rawoutput and then how it was transformed using a threshold**
+
 # Setup
 ```{r}
 if(!require("pacman")) install.packages("pacman")
@@ -20,10 +23,95 @@ submission <- read_csv("https://raw.githubusercontent.com/vsomesula/COPwebsite/m
 attach(train)
 ```
 # Exploratory Data Analyis
-### We gain a sense of what the variables are in this dataset. Some variables we can automatically excluse just from a cursory glance of the dataset such as Name, PassengerId, Ticket, and Cabin.
+### We gain a sense of what the variables are in this dataset. Some variables we can automatically excluse just from a cursory glance of the dataset such as Name, PassengerId, Ticket, and Cabin. (because these are all unique per passanger)
 ```{r}
 glimpse(train)
 ```
+
+```{r}
+train %>%
+  ggplot() +
+  geom_bar(aes(Pclass, fill =  Pclass)) +
+  theme(
+    axis.title.x = element_blank(),
+    legend.position = "none"
+  )
+count(train, Pclass)
+```
+### We can see a decent distribution of the Pclass variable. However, there seems to be quite a lot of people in Pclass 3.There are almost the same amount of people in 3 as 1 and 2 put together.
+
+```{r}
+train %>%
+  ggplot() +
+  geom_bar(aes(Sex, fill =  Sex)) +
+  theme(
+    axis.title.x = element_blank(),
+    legend.position = "none"
+  )
+count(train, Sex)
+```
+### There are many more males than females
+
+```{r}
+train %>%
+  ggplot() +
+  geom_bar(aes(Age, fill =  Age)) +
+  theme(
+    axis.title.x = element_blank(),
+    legend.position = "none"
+  )
+count(train, Age)
+```
+### Age as a variable seems to be clustered around 25-30 range and the overall distribution seems to be right skewed.
+```{r}
+train %>%
+  ggplot() +
+  geom_bar(aes(SibSp, fill =  SibSp)) +
+  theme(
+    axis.title.x = element_blank(),
+    legend.position = "none"
+  )
+count(train, SibSp)
+```
+### THere are a lot of people with zero siblings. This data could be collapsed into a binary that is either you have a sibling or you do not.
+```{r}
+train %>%
+  ggplot() +
+  geom_bar(aes(Parch, fill =  Parch)) +
+  theme(
+    axis.title.x = element_blank(),
+    legend.position = "none"
+  )
+count(train, Parch)
+```
+### This is similar to the Sibsp variable. It cann be transformed into either you have 0 parch or you have more than 0.
+
+```{r}
+
+train %>%
+  ggplot() +
+  geom_bar(aes(Fare, fill =  Fare)) +
+  theme(
+    axis.title.x = element_blank(),
+    legend.position = "none"
+  )
+count(train, Fare)
+
+```
+### This data could be transformed as looking at the graph and data we can see there are some very low fare below 20 dollars some around 50 and some very expensive ones in the 100 and above. Categorizing this data could improve the predicting power.
+```{r}
+train %>%
+  ggplot() +
+  geom_bar(aes(Embarked, fill =  Embarked)) +
+  theme(
+    axis.title.x = element_blank(),
+    legend.position = "none"
+  )
+count(train, Embarked)
+```
+### There is a decent distribution of this ordinal data. No point in transforming since only three categories to begin with.
+
+
 # Build a logistic model with all the variables
 ### Doin so allows us to gain the p-values for each variable allowing us to determine which variables are high-yield predictors and which are not
 ```{r}
@@ -69,3 +157,13 @@ table(compare)
 ```
 ### We see that 409 of the passangers match between the Kaggle and the model I have developed which suggests that my solution is fairly accurate. Furthermore, the Kaggle model uses the Parch variable which I have excluded only resulting in 9 differnces suggesting that the Parch variable is not a very high-yield predictor.
 
+# To determine sensitivity and specifity we can use confusion matrix
+```{r}
+classificationtable<- table(output$Survived, submission$Survived)
+sensitivity<-(classificationtable[2,2]/(classificationtable[2,2]+classificationtable[2,1]))*100
+ sensitivity
+ 
+ specificity<-(classificationtable[1,1]/(classificationtable[1,1]+classificationtable[1,2]))*100
+ specificity 
+```
+### Both sensitivity and specificity are high as we can see from the values which means this moddle is a very good model.

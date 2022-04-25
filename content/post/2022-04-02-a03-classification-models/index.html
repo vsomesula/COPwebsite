@@ -20,6 +20,7 @@ tags: []
 <h1>Issues and challenges</h1>
 <div id="the-immediate-challenge-is-to-pick-which-variables-to-use-for-this-logistic-regression-model-as-not-all-variables-will-be-high-yield-predictors." class="section level3">
 <h3>The immediate challenge is to pick which variables to use for this logistic regression model as not all variables will be high yield predictors.</h3>
+<p><strong>There are two dataframes that are long inserted into the webpage. These dataframes are put into the solution so that the reader may observe the rawoutput and then how it was transformed using a threshold</strong></p>
 </div>
 </div>
 <div id="setup" class="section level1">
@@ -58,8 +59,8 @@ train &lt;- read_csv(&quot;https://raw.githubusercontent.com/vsomesula/COPwebsit
 </div>
 <div id="exploratory-data-analyis" class="section level1">
 <h1>Exploratory Data Analyis</h1>
-<div id="we-gain-a-sense-of-what-the-variables-are-in-this-dataset.-some-variables-we-can-automatically-excluse-just-from-a-cursory-glance-of-the-dataset-such-as-name-passengerid-ticket-and-cabin." class="section level3">
-<h3>We gain a sense of what the variables are in this dataset. Some variables we can automatically excluse just from a cursory glance of the dataset such as Name, PassengerId, Ticket, and Cabin.</h3>
+<div id="we-gain-a-sense-of-what-the-variables-are-in-this-dataset.-some-variables-we-can-automatically-excluse-just-from-a-cursory-glance-of-the-dataset-such-as-name-passengerid-ticket-and-cabin.-because-these-are-all-unique-per-passanger" class="section level3">
+<h3>We gain a sense of what the variables are in this dataset. Some variables we can automatically excluse just from a cursory glance of the dataset such as Name, PassengerId, Ticket, and Cabin. (because these are all unique per passanger)</h3>
 <pre class="r"><code>glimpse(train)</code></pre>
 <pre><code>## Rows: 891
 ## Columns: 12
@@ -75,6 +76,157 @@ train &lt;- read_csv(&quot;https://raw.githubusercontent.com/vsomesula/COPwebsit
 ## $ Fare        &lt;dbl&gt; 7.2500, 71.2833, 7.9250, 53.1000, 8.0500, 8.4583, 51.8625,~
 ## $ Cabin       &lt;chr&gt; NA, &quot;C85&quot;, NA, &quot;C123&quot;, NA, NA, &quot;E46&quot;, NA, NA, NA, &quot;G6&quot;, &quot;C~
 ## $ Embarked    &lt;chr&gt; &quot;S&quot;, &quot;C&quot;, &quot;S&quot;, &quot;S&quot;, &quot;S&quot;, &quot;Q&quot;, &quot;S&quot;, &quot;S&quot;, &quot;S&quot;, &quot;C&quot;, &quot;S&quot;, &quot;S&quot;~</code></pre>
+<pre class="r"><code>train %&gt;%
+  ggplot() +
+  geom_bar(aes(Pclass, fill =  Pclass)) +
+  theme(
+    axis.title.x = element_blank(),
+    legend.position = &quot;none&quot;
+  )</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<pre class="r"><code>count(train, Pclass)</code></pre>
+<pre><code>## # A tibble: 3 x 2
+##   Pclass     n
+##    &lt;dbl&gt; &lt;int&gt;
+## 1      1   216
+## 2      2   184
+## 3      3   491</code></pre>
+</div>
+<div id="we-can-see-a-decent-distribution-of-the-pclass-variable.-however-there-seems-to-be-quite-a-lot-of-people-in-pclass-3.there-are-almost-the-same-amount-of-people-in-3-as-1-and-2-put-together." class="section level3">
+<h3>We can see a decent distribution of the Pclass variable. However, there seems to be quite a lot of people in Pclass 3.There are almost the same amount of people in 3 as 1 and 2 put together.</h3>
+<pre class="r"><code>train %&gt;%
+  ggplot() +
+  geom_bar(aes(Sex, fill =  Sex)) +
+  theme(
+    axis.title.x = element_blank(),
+    legend.position = &quot;none&quot;
+  )</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<pre class="r"><code>count(train, Sex)</code></pre>
+<pre><code>## # A tibble: 2 x 2
+##   Sex        n
+##   &lt;chr&gt;  &lt;int&gt;
+## 1 female   314
+## 2 male     577</code></pre>
+</div>
+<div id="there-are-many-more-males-than-females" class="section level3">
+<h3>There are many more males than females</h3>
+<pre class="r"><code>train %&gt;%
+  ggplot() +
+  geom_bar(aes(Age, fill =  Age)) +
+  theme(
+    axis.title.x = element_blank(),
+    legend.position = &quot;none&quot;
+  )</code></pre>
+<pre><code>## Warning: Removed 177 rows containing non-finite values (stat_count).</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<pre class="r"><code>count(train, Age)</code></pre>
+<pre><code>## # A tibble: 89 x 2
+##      Age     n
+##    &lt;dbl&gt; &lt;int&gt;
+##  1  0.42     1
+##  2  0.67     1
+##  3  0.75     2
+##  4  0.83     2
+##  5  0.92     1
+##  6  1        7
+##  7  2       10
+##  8  3        6
+##  9  4       10
+## 10  5        4
+## # ... with 79 more rows</code></pre>
+</div>
+<div id="age-as-a-variable-seems-to-be-clustered-around-25-30-range-and-the-overall-distribution-seems-to-be-right-skewed." class="section level3">
+<h3>Age as a variable seems to be clustered around 25-30 range and the overall distribution seems to be right skewed.</h3>
+<pre class="r"><code>train %&gt;%
+  ggplot() +
+  geom_bar(aes(SibSp, fill =  SibSp)) +
+  theme(
+    axis.title.x = element_blank(),
+    legend.position = &quot;none&quot;
+  )</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<pre class="r"><code>count(train, SibSp)</code></pre>
+<pre><code>## # A tibble: 7 x 2
+##   SibSp     n
+##   &lt;dbl&gt; &lt;int&gt;
+## 1     0   608
+## 2     1   209
+## 3     2    28
+## 4     3    16
+## 5     4    18
+## 6     5     5
+## 7     8     7</code></pre>
+</div>
+<div id="there-are-a-lot-of-people-with-zero-siblings.-this-data-could-be-collapsed-into-a-binary-that-is-either-you-have-a-sibling-or-you-do-not." class="section level3">
+<h3>THere are a lot of people with zero siblings. This data could be collapsed into a binary that is either you have a sibling or you do not.</h3>
+<pre class="r"><code>train %&gt;%
+  ggplot() +
+  geom_bar(aes(Parch, fill =  Parch)) +
+  theme(
+    axis.title.x = element_blank(),
+    legend.position = &quot;none&quot;
+  )</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<pre class="r"><code>count(train, Parch)</code></pre>
+<pre><code>## # A tibble: 7 x 2
+##   Parch     n
+##   &lt;dbl&gt; &lt;int&gt;
+## 1     0   678
+## 2     1   118
+## 3     2    80
+## 4     3     5
+## 5     4     4
+## 6     5     5
+## 7     6     1</code></pre>
+</div>
+<div id="this-is-similar-to-the-sibsp-variable.-it-cann-be-transformed-into-either-you-have-0-parch-or-you-have-more-than-0." class="section level3">
+<h3>This is similar to the Sibsp variable. It cann be transformed into either you have 0 parch or you have more than 0.</h3>
+<pre class="r"><code>train %&gt;%
+  ggplot() +
+  geom_bar(aes(Fare, fill =  Fare)) +
+  theme(
+    axis.title.x = element_blank(),
+    legend.position = &quot;none&quot;
+  )</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<pre class="r"><code>count(train, Fare)</code></pre>
+<pre><code>## # A tibble: 248 x 2
+##     Fare     n
+##    &lt;dbl&gt; &lt;int&gt;
+##  1  0       15
+##  2  4.01     1
+##  3  5        1
+##  4  6.24     1
+##  5  6.44     1
+##  6  6.45     1
+##  7  6.50     2
+##  8  6.75     2
+##  9  6.86     1
+## 10  6.95     1
+## # ... with 238 more rows</code></pre>
+</div>
+<div id="this-data-could-be-transformed-as-looking-at-the-graph-and-data-we-can-see-there-are-some-very-low-fare-below-20-dollars-some-around-50-and-some-very-expensive-ones-in-the-100-and-above.-categorizing-this-data-could-improve-the-predicting-power." class="section level3">
+<h3>This data could be transformed as looking at the graph and data we can see there are some very low fare below 20 dollars some around 50 and some very expensive ones in the 100 and above. Categorizing this data could improve the predicting power.</h3>
+<pre class="r"><code>train %&gt;%
+  ggplot() +
+  geom_bar(aes(Embarked, fill =  Embarked)) +
+  theme(
+    axis.title.x = element_blank(),
+    legend.position = &quot;none&quot;
+  )</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<pre class="r"><code>count(train, Embarked)</code></pre>
+<pre><code>## # A tibble: 4 x 2
+##   Embarked     n
+##   &lt;chr&gt;    &lt;int&gt;
+## 1 C          168
+## 2 Q           77
+## 3 S          644
+## 4 &lt;NA&gt;         2</code></pre>
+</div>
+<div id="there-is-a-decent-distribution-of-this-ordinal-data.-no-point-in-transforming-since-only-three-categories-to-begin-with." class="section level3">
+<h3>There is a decent distribution of this ordinal data. No point in transforming since only three categories to begin with.</h3>
 </div>
 </div>
 <div id="build-a-logistic-model-with-all-the-variables" class="section level1">
@@ -1875,5 +2027,18 @@ table(compare)</code></pre>
 </div>
 <div id="we-see-that-409-of-the-passangers-match-between-the-kaggle-and-the-model-i-have-developed-which-suggests-that-my-solution-is-fairly-accurate.-furthermore-the-kaggle-model-uses-the-parch-variable-which-i-have-excluded-only-resulting-in-9-differnces-suggesting-that-the-parch-variable-is-not-a-very-high-yield-predictor." class="section level3">
 <h3>We see that 409 of the passangers match between the Kaggle and the model I have developed which suggests that my solution is fairly accurate. Furthermore, the Kaggle model uses the Parch variable which I have excluded only resulting in 9 differnces suggesting that the Parch variable is not a very high-yield predictor.</h3>
+</div>
+</div>
+<div id="to-determine-sensitivity-and-specifity-we-can-use-confusion-matrix" class="section level1">
+<h1>To determine sensitivity and specifity we can use confusion matrix</h1>
+<pre class="r"><code>classificationtable&lt;- table(output$Survived, submission$Survived)
+sensitivity&lt;-(classificationtable[2,2]/(classificationtable[2,2]+classificationtable[2,1]))*100
+ sensitivity</code></pre>
+<pre><code>## [1] 96.6443</code></pre>
+<pre class="r"><code> specificity&lt;-(classificationtable[1,1]/(classificationtable[1,1]+classificationtable[1,2]))*100
+ specificity </code></pre>
+<pre><code>## [1] 98.51301</code></pre>
+<div id="both-sensitivity-and-specificity-are-high-as-we-can-see-from-the-values-which-means-this-moddle-is-a-very-good-model." class="section level3">
+<h3>Both sensitivity and specificity are high as we can see from the values which means this moddle is a very good model.</h3>
 </div>
 </div>
