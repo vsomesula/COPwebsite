@@ -6,11 +6,19 @@ slug: a02-regression-models-exercise
 categories: []
 tags: []
 ---
+# Executive Summary
+A machine learning professor wants to apply his skills towards developing a model to price diamonds so he can determine if he is getting a fair price for an engagement ring he wants to buy. He determined that the variables used in pricing a diamond are color, cut, carat weight, clarity, polish, symmetry, and certification. He has collected data from three different diamond websites to assist us in developing a multiple regression model to predict the price of a diamond ring of his interest.
+INCLUDE LAST LINE OF SUMMARY OF MODEL
+
+# Issues and challenges 
+In order to develop a multiple regression model, it is important to have a combination of metric variables and the categorical variables that are ordinally scaled. This means it is important to determine how the data in the categorical variables will be grouped.
+
 # Setup
 ```{r}
 if(!require("pacman")) install.packages("pacman")
 pacman::p_load(pacman,readxl, magrittr, productplots, psych, RColorBrewer, tidyverse, boot)
 diamonds <- read_csv("https://raw.githubusercontent.com/vsomesula/COPwebsite/main/content/post/2022-03-26-a02-regression-models-exercise/Professor_Proposes_Data.csv")
+diamonds
 ```
 ```{r,echo=FALSE}
 diamonds <- read_excel("C:/Users/prana/Downloads/Professor_Proposes_Data.xlsx")

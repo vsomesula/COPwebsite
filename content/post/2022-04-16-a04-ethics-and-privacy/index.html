@@ -11,10 +11,95 @@ tags: []
 
 
 <pre class="r"><code>library(knitr)
-knitr::include_graphics(&quot;C:/Users/prana/Downloads/certificate.pdf&quot;)</code></pre>
-<div class="figure"><span style="display:block;" id="fig:label"></span>
-<img src="C:/Users/prana/Downloads/certificate.pdf" alt="certificate" width="100%" />
+knitr::include_graphics(&quot;Screenshot 2022-04-25 143320.jpg&quot;)</code></pre>
+<div class="figure"><span style="display:block;" id="fig:unnamed-chunk-1"></span>
+<img src="Screenshot%202022-04-25%20143320.jpg" alt="certificate" width="50%" />
 <p class="caption">
 Figure 1: certificate
 </p>
+</div>
+<div id="setup" class="section level1">
+<h1>Setup</h1>
+<pre class="r"><code>library(dplyr)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;dplyr&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     filter, lag</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## -- Attaching packages --------------------------------------- tidyverse 1.3.1 --</code></pre>
+<pre><code>## v ggplot2 3.3.5     v purrr   0.3.4
+## v tibble  3.1.6     v stringr 1.4.0
+## v tidyr   1.2.0     v forcats 0.5.1
+## v readr   2.1.2</code></pre>
+<pre><code>## -- Conflicts ------------------------------------------ tidyverse_conflicts() --
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>library(reshape2)</code></pre>
+<pre><code>## Warning: package &#39;reshape2&#39; was built under R version 4.1.3</code></pre>
+<pre><code>## 
+## Attaching package: &#39;reshape2&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:tidyr&#39;:
+## 
+##     smiths</code></pre>
+<pre class="r"><code>library(knitr)
+dataCOVID2 &lt;- tribble(
+  ~Date, ~Mask, ~NoMask, 
+  &quot;7/13/2020&quot;, 22.8, 9.4,
+  &quot;7/14/2020&quot;, 19.6, 9.2,
+  &quot;7/15/2020&quot;, 20, 9.7,
+  &quot;7/16/2020&quot;, 19.8, 9.9,
+  &quot;7/17/2020&quot;, 19.7, 9.8,
+  &quot;7/18/2020&quot;, 20.2, 9.6,
+  &quot;7/19/2020&quot;, 20.2, 9.3,
+  &quot;7/20/2020&quot;, 20.4, 8.8,
+  &quot;7/21/2020&quot;, 21, 8.5,
+  &quot;7/22/2020&quot;, 20.7, 8.6,
+  &quot;7/23/2020&quot;, 19.7, 8.5,
+  &quot;7/24/2020&quot;, 20.3, 9.3,
+  &quot;7/25/2020&quot;, 19.8, 9.9,
+  &quot;7/26/2020&quot;, 19.4, 10,
+  &quot;7/27/2020&quot;, 18.6, 9.8,
+  &quot;7/28/2020&quot;, 16.8, 9.7,
+  &quot;7/29/2020&quot;, 16.5, 9.7,
+  &quot;7/30/2020&quot;, 16.4, 9.8,
+  &quot;7/31/2020&quot;, 16.4, 9.3,
+  &quot;8/1/2020&quot;, 16, 8.9,
+  &quot;8/2/2020&quot;, 15.8, 8.8,
+  &quot;8/3/2020&quot;, 15.9, 9,
+)
+attach(dataCOVID2)</code></pre>
+</div>
+<div id="visualiziation" class="section level1">
+<h1>Visualiziation</h1>
+<pre class="r"><code># Failed attempts at visualization
+# ggplot(dataCOVID, aes(Date)) +
+#   geom_line(aes(y = Mask, colour = &quot;Green&quot;)) +
+#   geom_line(aes(y = NoMask, colour = &quot;Yellow&quot;)) +
+#   scale_colour_manual(values = c(&quot;green&quot;, &quot;yellow&quot;), name = &quot;Kansas COVID-19 7-Day Rolling Average of Daily Cases/Per 100K Population&quot;, labels = c(&quot;Mask&quot;, &quot;NoMask&quot;)) +
+#   ylab(&quot;COVID&quot;)
+# 
+# ggplot(dataCOVID2, aes(x = Date, y = value, color = variable)) +
+#   geom_point(aes(y=Mask, col = &quot;Mask&quot;)) +
+#   geom_point(aes(y = NoMask, col = &quot;NoMask&quot;)) +
+#   labs(title = &quot;Kansas COVID-19 7-Day Rolling Average of Daily Cases/Per 100K Population&quot;, x = &quot;Date&quot;, y = &quot;Avg cases per 100k people&quot;) +
+#   theme(axis.text.x = element_text(angle = 50))
+
+ggplot(dataCOVID2, aes(x = Date, y = value, color = variable, group =1)) +
+  geom_point(aes(y = Mask, col = &quot;Mask&quot;)) +
+  geom_line(aes(y = Mask, col = &quot;Mask&quot;)) + 
+  geom_point(aes(y = NoMask, col = &quot;NoMask&quot;)) +
+  geom_line(y = NoMask, col = &quot;Blue&quot;) +
+  labs(title = &quot;Kansas COVID-19 7-Day Rolling Average of Daily Cases/Per 100K Population&quot;, subtitle = &quot;Mask counties vs. No-Mask Mandate counties&quot;, caption = &quot;Source: Kansas Department of Health and Environment&quot;, x = &quot;Date&quot;, y = &quot;Avg cases per 100k people&quot;) +
+  theme(axis.text.x = element_text(angle = 50))</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-3-1.png" width="672" />
+### Questions</p>
+<p>In the original visualization the graph is misleading because it purposely adds noise to the Mask and NoMask data by having unequal scales. There are two scales that are on the different sides of the graph any by having this weird scale this causes the lines from both graphs to intersect which does not allow the reader to clearly see how effective masking is in reducing cases. In my visualization, we can see the stark reduction in cases from around 23 to 16 where as the no mask line roughly hovers around the same value (9). Such misinformation through graphs is important to combat as it could lead to people doing behavior that’s harmful to society (such as not wearing a mask during the pandemic peak) based on misrepresented data.</p>
+</div>
+<div id="summary-of-video---ted-talk" class="section level1">
+<h1>Summary of video - Ted Talk</h1>
+<p>It was interesting to see how the speaker Joy compared viruses to algorithm bias in terms of how fast they can spread bias or “disease”. I never realized the wide spread implications of having bias in our technology. The problem is having proper training sets that include everyone and personally this explains to me why there is such a big push for diversity in tech. Through diversity implicit biases of one subpopulation can be corrected for and allow unbiased software to develop. The aforementioned implications is even more critical when entitites such as police and the government use it for decision with long term consequences such as prison sentences. We often see China as a surviellence state but the video made me question how much the government really watches secretly. Furthermore, it is important to go through the current software now and undo biases not just build new software. That we mishaps like Google identifying a Black individual as an ape will not happen. This might be challenging due to the blackbox nature of machine learning however it is our responsibility to make sure these algorithms that touch every facet of our life to be representative of the world they are helping.</p>
 </div>
