@@ -16,7 +16,7 @@ In order to develop a multiple regression model, it is important to have a combi
 # Setup
 ```{r}
 if(!require("pacman")) install.packages("pacman")
-pacman::p_load(pacman,readxl, magrittr, productplots, psych, RColorBrewer, tidyverse, boot)
+pacman::p_load(pacman,readxl, magrittr, productplots, psych, RColorBrewer, tidyverse, boot, caret)
 diamonds <- read_csv("https://raw.githubusercontent.com/vsomesula/COPwebsite/main/content/post/2022-03-26-a02-regression-models-exercise/Professor_Proposes_Data.csv")
 diamonds
 ```
@@ -34,7 +34,7 @@ diamonds$Symmetry <- as.factor(Symmetry)
 diamonds$Wholesaler <- as.factor(Wholesaler)
 diamonds
 ```
-#Graphing and frequency counting of each variable
+# Graphing and frequency counting of each variable
 ```{r}
 diamonds %>%
   ggplot() +
@@ -44,7 +44,13 @@ diamonds %>%
     legend.position = "none"
   )
 count(diamonds, Carat)
+summary(Carat)
 
+```
+### The data ranges from 0.09 to 1.58 and this a follows biomodal distrubition with two peaks with one around 0.2 and the other around 1.0
+
+
+```{r}
 diamonds %>%
   ggplot() +
   geom_bar(aes(Colour, fill =  Colour)) +
@@ -54,6 +60,11 @@ diamonds %>%
   )
 count(diamonds, Colour)
 
+```
+### Colour could be mutated to yellow and colorless as the different ratings are simply a range for both of these colors. One grouping would be D-I as colorless and the rest as yellow
+
+
+```{r}
 diamonds %>%
   ggplot() +
   geom_bar(aes(Clarity, fill =  Clarity)) +
@@ -63,6 +74,12 @@ diamonds %>%
   )
 count(diamonds, Clarity)
 
+```
+
+### Instead of being ordinal data, this data could be converted to nominal data since there is an inherent order by assigning the numbers 1-9 to each "level" in the Clarity variable
+
+
+```{r}
 diamonds %>%
   ggplot() +
   geom_bar(aes(Cut, fill =  Cut)) +
@@ -72,6 +89,12 @@ diamonds %>%
   )
 count(diamonds, Cut)
 
+```
+
+### The data seems to be well balanced
+
+
+```{r}
 diamonds %>%
   ggplot() +
   geom_bar(aes(Certification, fill =  Certification)) +
@@ -81,6 +104,11 @@ diamonds %>%
   )
 count(diamonds, Certification)
 
+```
+### The certification value seems to be ordinal data with high representation in the GIA and EGL category.
+
+
+```{r}
 diamonds %>%
   ggplot() +
   geom_bar(aes(Polish, fill =  Polish)) +
@@ -90,6 +118,10 @@ diamonds %>%
   )
 count(diamonds, Polish)
 
+```
+### Some categories such as Fair, Ideal, and even Excellent to an extent are not well represented so they can be collapsed into other categories such as Fair-Ideal, and Very Good-Excellentl.
+
+```{r}
 diamonds %>%
   ggplot() +
   geom_bar(aes(Symmetry, fill =  Symmetry)) +
@@ -99,6 +131,12 @@ diamonds %>%
   )
 count(diamonds, Symmetry)
 
+```
+
+### For symmetry certain categories such as Ideala nd Fair are less represented and it could similairly be collpased like Polish.
+
+
+```{r}
 diamonds %>%
   ggplot() +
   geom_bar(aes(Wholesaler, fill =  Wholesaler)) +
@@ -109,42 +147,60 @@ diamonds %>%
 count(diamonds, Wholesaler)
 
 ```
-# Explaotory Analysis
-## This type of model will give us an equation where we can use as many of the categorial variables as we want. We can imagine it as CutGx1 + CutIx2 + .. with their respective coefficents. With each duiamond if it has Cut level of G than x2, x3, etc for that category will be 0 leaving us only with the weight for Cut G. This will leave us a very convuluted model however as seen below. We will remove wholesaler as it is three different websites from which the information was obtained which means it should be three different models (i.e. wholesaler is not an indepdent variable)
+### This is obvious ordinal data that cannot be simplified.
+
+# Transformation of Data
 ```{r}
-lm.fit <- lm(Price~Carat + Colour + Clarity +Cut + Certification + Polish + Symmetry, data = diamonds)
-summary(lm.fit)
+diamonds <- mutate(diamonds, Colour2C = ifelse(Colour == "J", "Colourless", ifelse(Colour == "K", "Colourless", ifelse(Colour == "L", "Colourless", "Yellow"))))
+diamonds<- mutate(diamonds, Polish2C = ifelse(Polish == "v", "VG-E", ifelse(Polish == "V,", "VG-E", ifelse(Polish == "X", "VG-E", "F-I"))))
+diamonds<- mutate(diamonds, Symmetry2C = ifelse(Symmetry == "v", "VG-E", ifelse(Symmetry == "V,", "VG-E", ifelse(Symmetry == "X", "VG-E", "F-I"))))
+attach(diamonds)
 ```
-## We can use this model for testing however through code to see the results. In a completely accurate world, if we had the wholesaler from which the professor was buying from (assuming it was 1,2, or 3) we could make three different models and see if he was getting a fair price for his diamond
+
+
+# Exploratory Analysis
+## This type of model will give us an equation where we can use as many of the categorial variables as we want. We can imagine it as CutGx1 + CutIx2 + .. with their respective coefficents. With each diamond if it has Cut level of G than x2, x3, etc for that category will be 0 leaving us only with the weight for Cut G. This will leave us a very convuluted model however as seen below.
 ```{r}
-df <- data.frame(Carat = 0.9, Colour = "J", Clarity = "SI2", Cut = "V", Certification = "GIA", Polish = "G", Symmetry = "V")
+lm.fit <- lm(Price~Carat + Colour2C + Clarity +Cut + Certification + Polish2C + Symmetry2C, data = diamonds)
+summary(lm.fit)
+caret::varImp(lm.fit)
+lm.fit.untransformed <- lm(Price~Carat + Colour + Clarity +Cut + Certification + Polish + Symmetry, data = diamonds)
+summary(lm.fit.untransformed)
+caret::varImp(lm.fit.untransformed)
+```
+# Analysis of model
+
+There is much to unpack from running the lines of code above. Just for comparison, I ran two models one where the variables had been transformed and one where the variables had not been transformed. I also used the caret package and the variable importance function within the package to determine which variables were most significant - or in other words which variables to include in the final model.
+
+First we can see that Carat is a huge determining variable for price. This is corroborated by the huge number the Carat function returned for both variables. Similarly, the Colour variable in its transformed form is shown to be an important variable due to its low p value. Polish and Symmetry despite being transformed do not seem to be variables with high predictive power. Clarity also seems to be high predictive variables as seen by their low p values and high values in the varImp function. So in conclusion, Carat, Clarity, and Color are the most important variables for determine price. Cut and certification seem to be the middle tier variables for determining price. Finally, polish and symmetry have minimal impact in determining the price
+
+## We can use this model for testing however through code to see the results. 
+```{r}
+df <- data.frame(Carat = 0.9, Clarity = "SI2", Cut = "V", Certification = "GIA", Colour2C = "Colourless", Polish2C = "F-I", Symmetry2C = "VG-E")
 as_tibble(df)
-df$Colour <- as.factor(df$Colour)
+df$Colour2C <- as.factor(df$Colour)
 df$Clarity <- as.factor(df$Clarity)
 df$Cut <- as.factor(df$Cut)
 df$Certification <- as.factor(df$Certification)
-df$Polish <- as.factor(df$Polish)
-df$Symmetry <- as.factor(df$Symmetry)
-#df$Wholesaler <- as.factor(df$Wholesaler)
+df$Polish2C <- as.factor(df$Polish)
+df$Symmetry2C <- as.factor(df$Symmetry)
 df
 predict(lm.fit, df )
 ```
-# Boot strap validation
+# The final price the model has generated is 2736.82 which is different from the 3100 generated by the professor. However, we did not consider the labor cost of retail and other associated costs of the diamond such as transport of the diamond that may be factored into the diamonds price. Furthermore, the ring was not included in the data provided.
+
+# Boot strap validation of the model
 ```{r}
 boot.fn <- function(data, index){
-  return(coef(lm(Price~Carat + Colour + Clarity +Cut + Certification + Polish + Symmetry+Wholesaler, data = diamonds)))
+  return(coef(lm(Price~Carat+Colour2C+Cut+Polish2C+Symmetry2C, data = diamonds,subset = index)))
 }
 set.seed(1)
-boot.out <- boot(diamonds, boot.fn, 1000)
+boot.fn(diamonds,sample(400,400, replace = T))
+boot.out <- boot(diamonds, boot.fn, 5000)
 plot(boot.out)
 ```
-# K fold validation will not work unless we use stratified sort or use dummy variables
-```{r, error=TRUE}
-K = 10
-glm.fit <- glm(Price~ Carat + Colour + Clarity +Cut + Certification + Polish + Symmetry, data =  diamonds)
-cv.error <- cv.glm(diamonds, glm.fit, K = K)$delta[1]
+# We can see a roughly normal distribution with the model which means the model is good and there is minimal overfitting.
 
-```
 
 
 

@@ -24,7 +24,7 @@ INCLUDE LAST LINE OF SUMMARY OF MODEL</p>
 <pre class="r"><code>if(!require(&quot;pacman&quot;)) install.packages(&quot;pacman&quot;)</code></pre>
 <pre><code>## Loading required package: pacman</code></pre>
 <pre><code>## Warning: package &#39;pacman&#39; was built under R version 4.1.3</code></pre>
-<pre class="r"><code>pacman::p_load(pacman,readxl, magrittr, productplots, psych, RColorBrewer, tidyverse, boot)
+<pre class="r"><code>pacman::p_load(pacman,readxl, magrittr, productplots, psych, RColorBrewer, tidyverse, boot, caret)
 diamonds &lt;- read_csv(&quot;https://raw.githubusercontent.com/vsomesula/COPwebsite/main/content/post/2022-03-26-a02-regression-models-exercise/Professor_Proposes_Data.csv&quot;)</code></pre>
 <pre><code>## Rows: 440 Columns: 9</code></pre>
 <pre><code>## -- Column specification --------------------------------------------------------
@@ -72,7 +72,9 @@ diamonds</code></pre>
 ##  9  0.8  D      SI2     V     GIA           V      V         3012 1         
 ## 10  0.8  D      SI2     V     GIA           V      X         3012 1         
 ## # ... with 430 more rows</code></pre>
-<p>#Graphing and frequency counting of each variable</p>
+</div>
+<div id="graphing-and-frequency-counting-of-each-variable" class="section level1">
+<h1>Graphing and frequency counting of each variable</h1>
 <pre class="r"><code>diamonds %&gt;%
   ggplot() +
   geom_bar(aes(Carat, fill =  Carat)) +
@@ -96,6 +98,11 @@ diamonds</code></pre>
 ##  9  0.28     2
 ## 10  0.3    154
 ## # ... with 40 more rows</code></pre>
+<pre class="r"><code>summary(Carat)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##  0.0900  0.3000  0.8100  0.6693  1.0100  1.5800</code></pre>
+<div id="the-data-ranges-from-0.09-to-1.58-and-this-a-follows-biomodal-distrubition-with-two-peaks-with-one-around-0.2-and-the-other-around-1.0" class="section level3">
+<h3>The data ranges from 0.09 to 1.58 and this a follows biomodal distrubition with two peaks with one around 0.2 and the other around 1.0</h3>
 <pre class="r"><code>diamonds %&gt;%
   ggplot() +
   geom_bar(aes(Colour, fill =  Colour)) +
@@ -103,7 +110,7 @@ diamonds</code></pre>
     axis.title.x = element_blank(),
     legend.position = &quot;none&quot;
   )</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-4-2.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 <pre class="r"><code>count(diamonds, Colour)</code></pre>
 <pre><code>## # A tibble: 9 x 2
 ##   Colour     n
@@ -117,6 +124,9 @@ diamonds</code></pre>
 ## 7 J         72
 ## 8 K         31
 ## 9 L         12</code></pre>
+</div>
+<div id="colour-could-be-mutated-to-yellow-and-colorless-as-the-different-ratings-are-simply-a-range-for-both-of-these-colors.-one-grouping-would-be-d-i-as-colorless-and-the-rest-as-yellow" class="section level3">
+<h3>Colour could be mutated to yellow and colorless as the different ratings are simply a range for both of these colors. One grouping would be D-I as colorless and the rest as yellow</h3>
 <pre class="r"><code>diamonds %&gt;%
   ggplot() +
   geom_bar(aes(Clarity, fill =  Clarity)) +
@@ -124,7 +134,7 @@ diamonds</code></pre>
     axis.title.x = element_blank(),
     legend.position = &quot;none&quot;
   )</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-4-3.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 <pre class="r"><code>count(diamonds, Clarity)</code></pre>
 <pre><code>## # A tibble: 9 x 2
 ##   Clarity     n
@@ -138,6 +148,9 @@ diamonds</code></pre>
 ## 7 VS2        41
 ## 8 VVS1        2
 ## 9 VVS2        5</code></pre>
+</div>
+<div id="instead-of-being-ordinal-data-this-data-could-be-converted-to-nominal-data-since-there-is-an-inherent-order-by-assigning-the-numbers-1-9-to-each-level-in-the-clarity-variable" class="section level3">
+<h3>Instead of being ordinal data, this data could be converted to nominal data since there is an inherent order by assigning the numbers 1-9 to each “level” in the Clarity variable</h3>
 <pre class="r"><code>diamonds %&gt;%
   ggplot() +
   geom_bar(aes(Cut, fill =  Cut)) +
@@ -145,7 +158,7 @@ diamonds</code></pre>
     axis.title.x = element_blank(),
     legend.position = &quot;none&quot;
   )</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-4-4.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 <pre class="r"><code>count(diamonds, Cut)</code></pre>
 <pre><code>## # A tibble: 5 x 2
 ##   Cut       n
@@ -155,6 +168,9 @@ diamonds</code></pre>
 ## 3 I        86
 ## 4 V        97
 ## 5 X       149</code></pre>
+</div>
+<div id="the-data-seems-to-be-well-balanced" class="section level3">
+<h3>The data seems to be well balanced</h3>
 <pre class="r"><code>diamonds %&gt;%
   ggplot() +
   geom_bar(aes(Certification, fill =  Certification)) +
@@ -162,7 +178,7 @@ diamonds</code></pre>
     axis.title.x = element_blank(),
     legend.position = &quot;none&quot;
   )</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-4-5.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 <pre class="r"><code>count(diamonds, Certification)</code></pre>
 <pre><code>## # A tibble: 5 x 2
 ##   Certification     n
@@ -172,6 +188,9 @@ diamonds</code></pre>
 ## 3 EGL             119
 ## 4 GIA             265
 ## 5 IGI              43</code></pre>
+</div>
+<div id="the-certification-value-seems-to-be-ordinal-data-with-high-representation-in-the-gia-and-egl-category." class="section level3">
+<h3>The certification value seems to be ordinal data with high representation in the GIA and EGL category.</h3>
 <pre class="r"><code>diamonds %&gt;%
   ggplot() +
   geom_bar(aes(Polish, fill =  Polish)) +
@@ -179,7 +198,7 @@ diamonds</code></pre>
     axis.title.x = element_blank(),
     legend.position = &quot;none&quot;
   )</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-4-6.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 <pre class="r"><code>count(diamonds, Polish)</code></pre>
 <pre><code>## # A tibble: 6 x 2
 ##   Polish     n
@@ -190,6 +209,9 @@ diamonds</code></pre>
 ## 4 v          1
 ## 5 V        203
 ## 6 X         61</code></pre>
+</div>
+<div id="some-categories-such-as-fair-ideal-and-even-excellent-to-an-extent-are-not-well-represented-so-they-can-be-collapsed-into-other-categories-such-as-fair-ideal-and-very-good-excellentl." class="section level3">
+<h3>Some categories such as Fair, Ideal, and even Excellent to an extent are not well represented so they can be collapsed into other categories such as Fair-Ideal, and Very Good-Excellentl.</h3>
 <pre class="r"><code>diamonds %&gt;%
   ggplot() +
   geom_bar(aes(Symmetry, fill =  Symmetry)) +
@@ -197,7 +219,7 @@ diamonds</code></pre>
     axis.title.x = element_blank(),
     legend.position = &quot;none&quot;
   )</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-4-7.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 <pre class="r"><code>count(diamonds, Symmetry)</code></pre>
 <pre><code>## # A tibble: 5 x 2
 ##   Symmetry     n
@@ -207,6 +229,9 @@ diamonds</code></pre>
 ## 3 I            5
 ## 4 V          206
 ## 5 X           51</code></pre>
+</div>
+<div id="for-symmetry-certain-categories-such-as-ideala-nd-fair-are-less-represented-and-it-could-similairly-be-collpased-like-polish." class="section level3">
+<h3>For symmetry certain categories such as Ideala nd Fair are less represented and it could similairly be collpased like Polish.</h3>
 <pre class="r"><code>diamonds %&gt;%
   ggplot() +
   geom_bar(aes(Wholesaler, fill =  Wholesaler)) +
@@ -214,7 +239,7 @@ diamonds</code></pre>
     axis.title.x = element_blank(),
     legend.position = &quot;none&quot;
   )</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-4-8.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
 <pre class="r"><code>count(diamonds, Wholesaler)</code></pre>
 <pre><code>## # A tibble: 3 x 2
 ##   Wholesaler     n
@@ -223,12 +248,89 @@ diamonds</code></pre>
 ## 2 2            180
 ## 3 3            200</code></pre>
 </div>
-<div id="explaotory-analysis" class="section level1">
-<h1>Explaotory Analysis</h1>
-<div id="this-type-of-model-will-give-us-an-equation-where-we-can-use-as-many-of-the-categorial-variables-as-we-want.-we-can-imagine-it-as-cutgx1-cutix2-..-with-their-respective-coefficents.-with-each-duiamond-if-it-has-cut-level-of-g-than-x2-x3-etc-for-that-category-will-be-0-leaving-us-only-with-the-weight-for-cut-g.-this-will-leave-us-a-very-convuluted-model-however-as-seen-below.-we-will-remove-wholesaler-as-it-is-three-different-websites-from-which-the-information-was-obtained-which-means-it-should-be-three-different-models-i.e.-wholesaler-is-not-an-indepdent-variable" class="section level2">
-<h2>This type of model will give us an equation where we can use as many of the categorial variables as we want. We can imagine it as CutGx1 + CutIx2 + .. with their respective coefficents. With each duiamond if it has Cut level of G than x2, x3, etc for that category will be 0 leaving us only with the weight for Cut G. This will leave us a very convuluted model however as seen below. We will remove wholesaler as it is three different websites from which the information was obtained which means it should be three different models (i.e. wholesaler is not an indepdent variable)</h2>
-<pre class="r"><code>lm.fit &lt;- lm(Price~Carat + Colour + Clarity +Cut + Certification + Polish + Symmetry, data = diamonds)
+<div id="this-is-obvious-ordinal-data-that-cannot-be-simplified." class="section level3">
+<h3>This is obvious ordinal data that cannot be simplified.</h3>
+</div>
+</div>
+<div id="transformation-of-data" class="section level1">
+<h1>Transformation of Data</h1>
+<pre class="r"><code>diamonds &lt;- mutate(diamonds, Colour2C = ifelse(Colour == &quot;J&quot;, &quot;Colourless&quot;, ifelse(Colour == &quot;K&quot;, &quot;Colourless&quot;, ifelse(Colour == &quot;L&quot;, &quot;Colourless&quot;, &quot;Yellow&quot;))))
+diamonds&lt;- mutate(diamonds, Polish2C = ifelse(Polish == &quot;v&quot;, &quot;VG-E&quot;, ifelse(Polish == &quot;V,&quot;, &quot;VG-E&quot;, ifelse(Polish == &quot;X&quot;, &quot;VG-E&quot;, &quot;F-I&quot;))))
+diamonds&lt;- mutate(diamonds, Symmetry2C = ifelse(Symmetry == &quot;v&quot;, &quot;VG-E&quot;, ifelse(Symmetry == &quot;V,&quot;, &quot;VG-E&quot;, ifelse(Symmetry == &quot;X&quot;, &quot;VG-E&quot;, &quot;F-I&quot;))))
+attach(diamonds)</code></pre>
+<pre><code>## The following objects are masked from diamonds (pos = 3):
+## 
+##     Carat, Certification, Clarity, Colour, Cut, Polish, Price,
+##     Symmetry, Wholesaler</code></pre>
+</div>
+<div id="exploratory-analysis" class="section level1">
+<h1>Exploratory Analysis</h1>
+<div id="this-type-of-model-will-give-us-an-equation-where-we-can-use-as-many-of-the-categorial-variables-as-we-want.-we-can-imagine-it-as-cutgx1-cutix2-..-with-their-respective-coefficents.-with-each-diamond-if-it-has-cut-level-of-g-than-x2-x3-etc-for-that-category-will-be-0-leaving-us-only-with-the-weight-for-cut-g.-this-will-leave-us-a-very-convuluted-model-however-as-seen-below." class="section level2">
+<h2>This type of model will give us an equation where we can use as many of the categorial variables as we want. We can imagine it as CutGx1 + CutIx2 + .. with their respective coefficents. With each diamond if it has Cut level of G than x2, x3, etc for that category will be 0 leaving us only with the weight for Cut G. This will leave us a very convuluted model however as seen below.</h2>
+<pre class="r"><code>lm.fit &lt;- lm(Price~Carat + Colour2C + Clarity +Cut + Certification + Polish2C + Symmetry2C, data = diamonds)
 summary(lm.fit)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = Price ~ Carat + Colour2C + Clarity + Cut + Certification + 
+##     Polish2C + Symmetry2C, data = diamonds)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -1138.06  -137.55   -44.05   169.04   718.21 
+## 
+## Coefficients:
+##                   Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)      -1795.698    129.582 -13.858  &lt; 2e-16 ***
+## Carat             4090.047     61.271  66.753  &lt; 2e-16 ***
+## Colour2CYellow     416.161     32.258  12.901  &lt; 2e-16 ***
+## ClarityI2         -817.211     62.498 -13.076  &lt; 2e-16 ***
+## ClaritySI1         743.621     50.515  14.721  &lt; 2e-16 ***
+## ClaritySI2         701.345     43.556  16.102  &lt; 2e-16 ***
+## ClaritySI3         232.950     58.489   3.983 8.03e-05 ***
+## ClarityVS1         991.441     70.560  14.051  &lt; 2e-16 ***
+## ClarityVS2         794.179     62.448  12.717  &lt; 2e-16 ***
+## ClarityVVS1       1067.207    189.863   5.621 3.47e-08 ***
+## ClarityVVS2        845.418    123.962   6.820 3.19e-11 ***
+## CutG               119.335     50.265   2.374 0.018041 *  
+## CutI               157.759     47.107   3.349 0.000884 ***
+## CutV               172.818     48.293   3.579 0.000386 ***
+## CutX               113.645     40.957   2.775 0.005771 ** 
+## CertificationDOW  -598.507    267.070  -2.241 0.025548 *  
+## CertificationEGL  -373.522     84.225  -4.435 1.18e-05 ***
+## CertificationGIA   -91.307     80.674  -1.132 0.258364    
+## CertificationIGI    79.574     92.610   0.859 0.390703    
+## Polish2CVG-E        -3.448     38.772  -0.089 0.929179    
+## Symmetry2CVG-E      68.620     41.108   1.669 0.095815 .  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 248.6 on 419 degrees of freedom
+## Multiple R-squared:  0.9573, Adjusted R-squared:  0.9553 
+## F-statistic: 470.1 on 20 and 419 DF,  p-value: &lt; 2.2e-16</code></pre>
+<pre class="r"><code>caret::varImp(lm.fit)</code></pre>
+<pre><code>##                      Overall
+## Carat            66.75331999
+## Colour2CYellow   12.90103290
+## ClarityI2        13.07572223
+## ClaritySI1       14.72093901
+## ClaritySI2       16.10219029
+## ClaritySI3        3.98283406
+## ClarityVS1       14.05097427
+## ClarityVS2       12.71735363
+## ClarityVVS1       5.62091896
+## ClarityVVS2       6.81995844
+## CutG              2.37412095
+## CutI              3.34898081
+## CutV              3.57850936
+## CutX              2.77476895
+## CertificationDOW  2.24101367
+## CertificationEGL  4.43478290
+## CertificationGIA  1.13180502
+## CertificationIGI  0.85923344
+## Polish2CVG-E      0.08893126
+## Symmetry2CVG-E    1.66924652</code></pre>
+<pre class="r"><code>lm.fit.untransformed &lt;- lm(Price~Carat + Colour + Clarity +Cut + Certification + Polish + Symmetry, data = diamonds)
+summary(lm.fit.untransformed)</code></pre>
 <pre><code>## 
 ## Call:
 ## lm(formula = Price ~ Carat + Colour + Clarity + Cut + Certification + 
@@ -281,89 +383,87 @@ summary(lm.fit)</code></pre>
 ## Residual standard error: 197.2 on 406 degrees of freedom
 ## Multiple R-squared:  0.974,  Adjusted R-squared:  0.9719 
 ## F-statistic: 460.4 on 33 and 406 DF,  p-value: &lt; 2.2e-16</code></pre>
+<pre class="r"><code>caret::varImp(lm.fit.untransformed)</code></pre>
+<pre><code>##                       Overall
+## Carat            81.978377021
+## ColourE           3.572390802
+## ColourF           5.802374535
+## ColourG           5.529437566
+## ColourH           8.110675915
+## ColourI           9.436976651
+## ColourJ          11.636254348
+## ColourK          16.157134451
+## ColourL          15.372758982
+## ClarityI2        15.320846016
+## ClaritySI1       19.852977845
+## ClaritySI2       20.541089071
+## ClaritySI3        7.903390429
+## ClarityVS1       17.364761016
+## ClarityVS2       17.177708970
+## ClarityVVS1       8.679517959
+## ClarityVVS2       9.084608423
+## CutG              1.348551274
+## CutI              2.333456666
+## CutV              2.024941540
+## CutX              1.591530354
+## CertificationDOW  2.241121238
+## CertificationEGL  5.103403901
+## CertificationGIA  0.804393687
+## CertificationIGI  0.002670503
+## PolishG           1.975998244
+## PolishI           2.942433758
+## Polishv           1.148870948
+## PolishV           2.047682288
+## PolishX           2.075982385
+## SymmetryG         1.884293922
+## SymmetryV         1.950195208
+## SymmetryX         1.661253216</code></pre>
 </div>
-<div id="we-can-use-this-model-for-testing-however-through-code-to-see-the-results.-in-a-completely-accurate-world-if-we-had-the-wholesaler-from-which-the-professor-was-buying-from-assuming-it-was-12-or-3-we-could-make-three-different-models-and-see-if-he-was-getting-a-fair-price-for-his-diamond" class="section level2">
-<h2>We can use this model for testing however through code to see the results. In a completely accurate world, if we had the wholesaler from which the professor was buying from (assuming it was 1,2, or 3) we could make three different models and see if he was getting a fair price for his diamond</h2>
-<pre class="r"><code>df &lt;- data.frame(Carat = 0.9, Colour = &quot;J&quot;, Clarity = &quot;SI2&quot;, Cut = &quot;V&quot;, Certification = &quot;GIA&quot;, Polish = &quot;G&quot;, Symmetry = &quot;V&quot;)
+</div>
+<div id="analysis-of-model" class="section level1">
+<h1>Analysis of model</h1>
+<p>There is much to unpack from running the lines of code above. Just for comparison, I ran two models one where the variables had been transformed and one where the variables had not been transformed. I also used the caret package and the variable importance function within the package to determine which variables were most significant - or in other words which variables to include in the final model.</p>
+<p>First we can see that Carat is a huge determining variable for price. This is corroborated by the huge number the Carat function returned for both variables. Similarly, the Colour variable in its transformed form is shown to be an important variable due to its low p value. Polish and Symmetry despite being transformed do not seem to be variables with high predictive power. Clarity also seems to be high predictive variables as seen by their low p values and high values in the varImp function. So in conclusion, Carat, Clarity, and Color are the most important variables for determine price. Cut and certification seem to be the middle tier variables for determining price. Finally, polish and symmetry have minimal impact in determining the price</p>
+<div id="we-can-use-this-model-for-testing-however-through-code-to-see-the-results." class="section level2">
+<h2>We can use this model for testing however through code to see the results.</h2>
+<pre class="r"><code>df &lt;- data.frame(Carat = 0.9, Clarity = &quot;SI2&quot;, Cut = &quot;V&quot;, Certification = &quot;GIA&quot;, Colour2C = &quot;Colourless&quot;, Polish2C = &quot;F-I&quot;, Symmetry2C = &quot;VG-E&quot;)
 as_tibble(df)</code></pre>
 <pre><code>## # A tibble: 1 x 7
-##   Carat Colour Clarity Cut   Certification Polish Symmetry
-##   &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;   &lt;chr&gt; &lt;chr&gt;         &lt;chr&gt;  &lt;chr&gt;   
-## 1   0.9 J      SI2     V     GIA           G      V</code></pre>
-<pre class="r"><code>df$Colour &lt;- as.factor(df$Colour)
+##   Carat Clarity Cut   Certification Colour2C   Polish2C Symmetry2C
+##   &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt; &lt;chr&gt;         &lt;chr&gt;      &lt;chr&gt;    &lt;chr&gt;     
+## 1   0.9 SI2     V     GIA           Colourless F-I      VG-E</code></pre>
+<pre class="r"><code>df$Colour2C &lt;- as.factor(df$Colour)
 df$Clarity &lt;- as.factor(df$Clarity)
 df$Cut &lt;- as.factor(df$Cut)
 df$Certification &lt;- as.factor(df$Certification)
-df$Polish &lt;- as.factor(df$Polish)
-df$Symmetry &lt;- as.factor(df$Symmetry)
-#df$Wholesaler &lt;- as.factor(df$Wholesaler)
+df$Polish2C &lt;- as.factor(df$Polish)
+df$Symmetry2C &lt;- as.factor(df$Symmetry)
 df</code></pre>
-<pre><code>##   Carat Colour Clarity Cut Certification Polish Symmetry
-## 1   0.9      J     SI2   V           GIA      G        V</code></pre>
+<pre><code>##   Carat Clarity Cut Certification   Colour2C Polish2C Symmetry2C
+## 1   0.9     SI2   V           GIA Colourless      F-I       VG-E</code></pre>
 <pre class="r"><code>predict(lm.fit, df )</code></pre>
-<pre><code>## Warning in predict.lm(lm.fit, df): prediction from a rank-deficient fit may be
-## misleading</code></pre>
-<pre><code>##        1 
-## 2797.542</code></pre>
+<pre><code>##       1 
+## 2736.82</code></pre>
 </div>
 </div>
-<div id="boot-strap-validation" class="section level1">
-<h1>Boot strap validation</h1>
+<div id="the-final-price-the-model-has-generated-is-2736.82-which-is-different-from-the-3100-generated-by-the-professor.-however-we-did-not-consider-the-labor-cost-of-retail-and-other-associated-costs-of-the-diamond-such-as-transport-of-the-diamond-that-may-be-factored-into-the-diamonds-price.-furthermore-the-ring-was-not-included-in-the-data-provided." class="section level1">
+<h1>The final price the model has generated is 2736.82 which is different from the 3100 generated by the professor. However, we did not consider the labor cost of retail and other associated costs of the diamond such as transport of the diamond that may be factored into the diamonds price. Furthermore, the ring was not included in the data provided.</h1>
+</div>
+<div id="boot-strap-validation-of-the-model" class="section level1">
+<h1>Boot strap validation of the model</h1>
 <pre class="r"><code>boot.fn &lt;- function(data, index){
-  return(coef(lm(Price~Carat + Colour + Clarity +Cut + Certification + Polish + Symmetry+Wholesaler, data = diamonds)))
+  return(coef(lm(Price~Carat+Colour2C+Cut+Polish2C+Symmetry2C, data = diamonds,subset = index)))
 }
 set.seed(1)
-boot.out &lt;- boot(diamonds, boot.fn, 1000)
+boot.fn(diamonds,sample(400,400, replace = T))</code></pre>
+<pre><code>##    (Intercept)          Carat Colour2CYellow           CutG           CutI 
+##      -755.1282      3103.0631       174.2119       274.3767       319.8246 
+##           CutV           CutX   Polish2CVG-E Symmetry2CVG-E 
+##       530.1699       104.0195       113.2334       168.4954</code></pre>
+<pre class="r"><code>boot.out &lt;- boot(diamonds, boot.fn, 5000)
 plot(boot.out)</code></pre>
-<pre><code>## [1] &quot;All values of t* are equal to  788.883051812151&quot;</code></pre>
-</div>
-<div id="k-fold-validation-will-not-work-unless-we-use-stratified-sort-or-use-dummy-variables" class="section level1">
-<h1>K fold validation will not work unless we use stratified sort or use dummy variables</h1>
-<pre class="r"><code>K = 10
-glm.fit &lt;- glm(Price~ Carat + Colour + Clarity +Cut + Certification + Polish + Symmetry, data =  diamonds)
-cv.error &lt;- cv.glm(diamonds, glm.fit, K = K)$delta[1]</code></pre>
-<pre><code>## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
-## prediction from a rank-deficient fit may be misleading
-
-## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
-## prediction from a rank-deficient fit may be misleading
-
-## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
-## prediction from a rank-deficient fit may be misleading
-
-## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
-## prediction from a rank-deficient fit may be misleading
-
-## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
-## prediction from a rank-deficient fit may be misleading
-
-## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
-## prediction from a rank-deficient fit may be misleading
-
-## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
-## prediction from a rank-deficient fit may be misleading
-
-## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
-## prediction from a rank-deficient fit may be misleading
-
-## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
-## prediction from a rank-deficient fit may be misleading
-
-## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
-## prediction from a rank-deficient fit may be misleading
-
-## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
-## prediction from a rank-deficient fit may be misleading
-
-## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
-## prediction from a rank-deficient fit may be misleading
-
-## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
-## prediction from a rank-deficient fit may be misleading
-
-## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
-## prediction from a rank-deficient fit may be misleading</code></pre>
-<pre><code>## Error in model.frame.default(Terms, newdata, na.action = na.action, xlev = object$xlevels): factor Certification has new levels DOW</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-15-1.png" width="672" />
+# We can see a roughly normal distribution with the model which means the model is good and there is minimal overfitting.</p>
 <!-- ### Junk Transformation of Colour variable so that the groups of letter all correspond to the correct grouping -->
 <!-- ```{r} -->
 <!-- for(v in 1:440){ -->
